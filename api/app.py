@@ -2,7 +2,6 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins='*')
-
 @app.route('/api/rayhaan')
 def get_rayhaan():
     InfoDb = []
@@ -14,7 +13,7 @@ def get_rayhaan():
         "Email": "rayhaanss786@gmail.com",
         "Color": ["Blue", "Black", "Green"]
     })
-
+    return jsonify(InfoDb)
 @app.route('/api/neil')
 def get_neil():
     InfoDb = []
@@ -24,10 +23,9 @@ def get_neil():
         "DOB": "March 9",
         "Residence": "Kyrgyzstan",
         "Email": "reilchandra9@gmail.com",
-        "Sports": ["Soccer", "Badminton"],
-        "Cars": ["Honda", "Prius"]
+        "Color": ["Yellow", "Red", "Green"]
     })
-
+    return jsonify(InfoDb)
 @app.route('/api/hithin')
 def get_Hithin():
     InfoDb = []
@@ -37,10 +35,9 @@ def get_Hithin():
         "DOB": "December 14",
         "Residence": "San Fransisco",
         "Email": "Hithinp@gmail.com",
-        "Formula 1": ["Mclaren", "Red bull", "Mercedes", "Ferrari", "Aston Martin", "Haas"], 
-        "Scioly Events": ["Flight", "Helicopter", "Electric vehicle", "Air Traj", "Robot Tour", "Wheeled Vehicle"]
+        "Color": ["Purple", "Light Pink", "Hot Pink"]
     })
-    
+    return jsonify(InfoDb)
 @app.route('/api/pradyun')
 def get_pradyun():
     InfoDb = []
@@ -50,10 +47,9 @@ def get_pradyun():
         "DOB": "February 28",
         "Residence": "4S Ranch",
         "Email": "pradyungowda@gmail.com",
-        "Extracurriculars": ["Math Club", "Physics Club", "Bio Club", "Competitive Badminton"],
-        "FamilyOwnedCars": ["Tesla Model S", "Nissan Rogue"]
+        "Color": ["Orange", "Black", "Red"]
     })
-
+    return jsonify(InfoDb)
 @app.route('/api/nikith')
 def get_nikith():
     InfoDb = []
@@ -63,9 +59,9 @@ def get_nikith():
         "DOB": "October 4",
         "Residence": "Houston",
         "Email": "nikithmuralikrishnan@gmail.com",
-        "FavoriteVideogame" : ["Brawl Stars", "Minecraft"]
+        "Color": ["Cyan"]
     })
-
+    return jsonify(InfoDb)
 @app.route('/api/kush')
 def get_kush():
     InfoDb = []
@@ -75,5 +71,25 @@ def get_kush():
         "DOB": "February 6",
         "Residence": "North Pole",
         "Email": "khariakush06@gmail.com",
-        "FavoriteSoccerPlayers": ["Virgil Van Dijk", "Lamine Yamal", "Mo Salah"]
+        "Color": ["Hot Pink", "Neon Pink", "Dark Pink"]
     })
+    return jsonify(InfoDb)
+#test
+# add an HTML endpoint to flask app
+@app.route('/')
+def say_hello():
+    html_content = """
+    <html>
+    <head>
+        <title>Hellox</title>
+    </head>
+    <body>
+        <h2>Hello, World!</h2>
+    </body>
+    </html>
+    """
+    return html_content
+
+if __name__ == '__main__':
+    # starts flask server on default port, http://127.0.0.1:5001
+    app.run(port=3333)
