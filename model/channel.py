@@ -165,6 +165,7 @@ def initChannels():
         striver_challenges = [
             Channel(name='Achievements', group_id=achievements.id),
             Channel(name='Challenges', group_id=challenges.id),
+            Channel(name='Likes', group_id=achievements.id),
         ]
         
         
