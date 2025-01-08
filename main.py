@@ -19,7 +19,8 @@ from __init__ import app, db, login_manager  # Key Flask objects
 from api.user import user_api
 from api.pfp import pfp_api
 from api.nestImg import nestImg_api # Justin added this, custom format for his website
-from api.post import post_api
+from api.achievements import post_api
+from api.challenges import challenges_api
 from api.channel import channel_api
 from api.group import group_api
 from api.section import section_api
