@@ -6,10 +6,10 @@ from __init__ import app
 from api.jwt_authorize import token_required
 from model.user import User
 
-steps_api = Blueprint('steps_api', __name__, url_prefix='/api')
+step_api = Blueprint('step_api', __name__, url_prefix='/api')
 
 # Create an Api object and associate it with the Blueprint
-api = Api(steps_api)
+api = Api(step_api)
 
 class StepsAPI:
     class steps(Resource):
