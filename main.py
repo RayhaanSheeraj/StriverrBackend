@@ -30,6 +30,8 @@ from api.carChat import car_chat_api
 from api.student import student_api
 from api.quotes import quotes_api
 from api.vote import vote_api
+from api.hobby import hobby_api
+
 # database Initialization functions
 from model.carChat import CarChat
 from model.user import User, initUsers
@@ -57,6 +59,7 @@ app.register_blueprint(vote_api)
 app.register_blueprint(car_api)
 app.register_blueprint(student_api)
 app.register_blueprint(quotes_api)
+app.register_blueprint(hobby_api)
 
 login_manager.login_view = "login"
 
