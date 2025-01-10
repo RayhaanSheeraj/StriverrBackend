@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 import requests
-
-app = Flask(__name__)
+from __init__ import app
 
 API_URL = 'https://api.api-ninjas.com/v1/quotes'
 API_KEY = 'dsH4Bmo4W7wv5SVKvjbSRQ==mRJPmT9DcU5oqtI7'  

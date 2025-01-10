@@ -10,7 +10,6 @@ from flask_login import current_user, login_required
 from flask import current_app
 from werkzeug.security import generate_password_hash
 import shutil
-from api.quotes import get_quotes
 
 
 
