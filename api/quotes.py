@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, request
+from flask import Blueprint, request, jsonify, current_app, Response, g
+from flask_restful import Api, Resource
+from __init__ import app
 import requests
-quotes_api = Blueprint('quotes_api', name, url_prefix='/api')
+quotes_api = Blueprint('quotes_api', __name__, url_prefix='/api')
 api = Api(quotes_api)
-
-app = Flask(__name__)
 
 API_URL = 'https://api.api-ninjas.com/v1/quotes'
 API_KEY = 'dsH4Bmo4W7wv5SVKvjbSRQ==mRJPmT9DcU5oqtI7'  
