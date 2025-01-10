@@ -39,3 +39,5 @@ def get_quote():
 @app.route('/')
 def home():
     return jsonify({"message": "Welcome to the Quotes API!"})
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=8887, debug=True)
