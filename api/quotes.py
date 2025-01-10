@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 import requests
+quotes_api = Blueprint('quotes_api', name, url_prefix='/api')
+api = Api(quotes_api)
 
 app = Flask(__name__)
 
@@ -36,6 +38,3 @@ def get_quote():
 @app.route('/')
 def home():
     return jsonify({"message": "Welcome to the Quotes API!"})
-
-if __name__ == '__main__':
-    app.run(debug=True)
