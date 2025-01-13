@@ -1,14 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Blueprint, Flask, jsonify, request
 from datetime import datetime
+from flask_restful import Api, Resource
 import uuid
+from __init__ import app
 from flask_cors import CORS
 
-app = Flask(__name__)
+goals_api = Blueprint('goals_api', __name__, url_prefix='/api')
+api = Api(goals_api)
+
 CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for all routes
-
-
-
-app = Flask(__name__)
 
 # In-memory storage for goals and progress
 goals = {}
