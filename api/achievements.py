@@ -195,16 +195,45 @@ class PostAPI:
             json_ready = [post.read() for post in posts]
             # Return a JSON list, converting Python dictionaries to JSON format
             return jsonify(json_ready)
+    class _DATE_FILTER(Resource):
+        @token_required()
+        def date(self):
+            """
+            Retrieve all posts created within a specific date range.
+            """
+            data = request.get_json()
+            if not data:
+                return {'message': 'Date range data not provided'}, 400
+            if 'start_date' not in data or 'end_date' not in data:
+                return {'message': 'Start date and End date are required'}, 400
+
+            try:
+                start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
+                end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
+            except ValueError:
+                return {'message': 'Invalid date format. Use YYYY-MM-DD'}, 400
+
+            if start_date > end_date:
+                return {'message': 'Start date must be earlier than or equal to end date'}, 400
+
+            posts = Post.query.filter(Post._created_at.between(start_date, end_date)).all()
+            if not posts:
+                return {'message': 'No posts found within the specified date range'}, 404
+
+            json_ready = [post.read() for post in posts]
+            return jsonify(json_ready)
 
     """
-    Map the _CRUD, _USER, _BULK_CRUD, and _FILTER classes to the API endpoints for /post, /post/user, /posts, and /posts/filter.
+    Map the _CRUD, _USER, _BULK_CRUD, _FILTER, and _DATE_fILTER classes to the API endpoints for /post, /post/user, /posts, and /posts/filter.
     - The API resource class inherits from flask_restful.Resource.
     - The _CRUD class defines the HTTP methods for the API.
     - The _USER class defines the endpoints for retrieving posts by the current user.
     - The _BULK_CRUD class defines the bulk operations for the API.
     - The _FILTER class defines the endpoints for filtering posts by channel ID and user ID.
+    - The _DATE_FILTER class defines the endpoints for filtering posts by date range.
     """
     api.add_resource(_CRUD, '/post')
     api.add_resource(_USER, '/post/user')
     api.add_resource(_BULK_CRUD, '/posts')
     api.add_resource(_FILTER, '/posts/filter')
+    api.add_resource(_DATE_FILTER, '/posts/date-filter')
