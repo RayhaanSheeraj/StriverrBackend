@@ -251,4 +251,4 @@ def start_goaltrack_api():
 if __name__ == "__main__":
     start_goaltrack_api()
     # this runs the flask application on the development server
-    app.run(debug=True, host="0.0.0.0", port="6968")
+    app.run(debug=True, host="0.0.0.0", port="8887")
