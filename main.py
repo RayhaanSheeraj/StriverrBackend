@@ -10,8 +10,8 @@ from flask_login import current_user, login_required
 from flask import current_app
 from werkzeug.security import generate_password_hash
 import shutil
-
-
+import threading
+import importlib.util
 
 # import "objects" from "this" project
 from __init__ import app, db, login_manager  # Key Flask objects 
@@ -230,8 +230,21 @@ def restore_data_command():
     
 # Register the custom command group with the Flask application
 app.cli.add_command(custom_cli)
+
+# Start the Goaltrack API
+def start_goaltrack_api():
+    try:
+        goaltrack_path = os.path.join(os.path.dirname(__file__), 'api', 'goaltrack.py')
+        spec = importlib.util.spec_from_file_location("goaltrack", goaltrack_path)
+        goaltrack = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(goaltrack)
+
+        threading.Thread(target=goaltrack.run_api, daemon=True).start()
+        print("Goaltrack API started successfully in a separate thread.")
+    except Exception as e:
+        print(f"Failed to start Goaltrack API: {e}")
         
-# this runs the flask application on the development server
 if __name__ == "__main__":
-    # change name for testing
-    app.run(debug=True, host="0.0.0.0", port="8887")
+    start_goaltrack_api()
+    # this runs the flask application on the development server
+    app.run(debug=True, host="0.0.0.0", port="6968")
