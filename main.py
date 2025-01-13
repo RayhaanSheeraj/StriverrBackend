@@ -13,8 +13,7 @@ import shutil
 
 
 
-# import "objects" from "this" project
-from __init__ import app, db, login_manager  # Key Flask objects 
+from __init__ import app, db, login_manager 
 # API endpoints
 from api.user import user_api
 from api.pfp import pfp_api
@@ -29,9 +28,15 @@ from api.messages_api import messages_api # Adi added this, messages for his web
 from api.carphoto import car_api
 from api.carChat import car_chat_api
 from api.student import student_api
+<<<<<<< HEAD
 from api.mood import mood_api
 
+=======
+from api.quotes import quotes_api
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
 from api.vote import vote_api
+from api.hobby import hobby_api
+from api.step import step_api
 # database Initialization functions
 from model.carChat import CarChat
 from model.user import User, initUsers
@@ -53,22 +58,25 @@ app.register_blueprint(channel_api)
 app.register_blueprint(group_api)
 app.register_blueprint(section_api)
 app.register_blueprint(car_chat_api)
-# Added new files to create nestPosts, uses a different format than Mortensen and didn't want to touch his junk
 app.register_blueprint(nestPost_api)
 app.register_blueprint(nestImg_api)
 app.register_blueprint(vote_api)
 app.register_blueprint(car_api)
 app.register_blueprint(student_api)
+<<<<<<< HEAD
 app.register_blueprint(mood_api)
+=======
+app.register_blueprint(quotes_api)
+app.register_blueprint(hobby_api)
+app.register_blueprint(step_api)
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
 
-# Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
 
 @login_manager.unauthorized_handler
 def unauthorized_callback():
     return redirect(url_for('login', next=request.path))
 
-# register URIs for server pages
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -77,7 +85,7 @@ def load_user(user_id):
 def inject_user():
     return dict(current_user=current_user)
 
-# Helper function to check if the URL is safe for redirects
+
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
@@ -103,12 +111,12 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.errorhandler(404)  # catch for URL not found
+@app.errorhandler(404)  
 def page_not_found(e):
-    # note that we set the 404 status explicitly
+    
     return render_template('404.html'), 404
 
-@app.route('/')  # connects default URL to index() function
+@app.route('/')  
 def index():
     print("Home:", current_user)
     return render_template("index.html")
@@ -125,7 +133,7 @@ def u2table():
     users = User.query.all()
     return render_template("u2table.html", user_data=users)
 
-# Helper function to extract uploads for a user (ie PFP image)
+
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
@@ -149,15 +157,15 @@ def reset_password(user_id):
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    # Set the new password
+
     if user.update({"password": app.config['DEFAULT_PASSWORD']}):
         return jsonify({'message': 'Password reset successfully'}), 200
     return jsonify({'error': 'Password reset failed'}), 500
 
-# Create an AppGroup for custom commands
+
 custom_cli = AppGroup('custom', help='Custom commands')
 
-# Define a command to run the data generation functions
+
 @custom_cli.command('generate_data')
 def generate_data():
     initUsers()
@@ -168,7 +176,7 @@ def generate_data():
     initNestPosts()
     initVotes()
     
-# Backup the old database
+
 def backup_database(db_uri, backup_uri):
     """Backup the current database."""
     if backup_uri:
@@ -179,7 +187,6 @@ def backup_database(db_uri, backup_uri):
     else:
         print("Backup not supported for production database.")
 
-# Extract data from the existing database
 def extract_data():
     data = {}
     with app.app_context():
@@ -190,7 +197,7 @@ def extract_data():
         data['posts'] = [post.read() for post in Post.query.all()]
     return data
 
-# Save extracted data to JSON files
+
 def save_data_to_json(data, directory='backup'):
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -199,7 +206,7 @@ def save_data_to_json(data, directory='backup'):
             json.dump(records, f)
     print(f"Data backed up to {directory} directory.")
 
-# Load data from JSON files
+
 def load_data_from_json(directory='backup'):
     data = {}
     for table in ['users', 'sections', 'groups', 'channels', 'posts']:
@@ -207,7 +214,7 @@ def load_data_from_json(directory='backup'):
             data[table] = json.load(f)
     return data
 
-# Restore data to the new database
+
 def restore_data(data):
     with app.app_context():
         users = User.restore(data['users'])
@@ -217,23 +224,23 @@ def restore_data(data):
         _ = Post.restore(data['posts'])
     print("Data restored to the new database.")
 
-# Define a command to backup data
+
 @custom_cli.command('backup_data')
 def backup_data():
     data = extract_data()
     save_data_to_json(data)
     backup_database(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_BACKUP_URI'])
 
-# Define a command to restore data
+
 @custom_cli.command('restore_data')
 def restore_data_command():
     data = load_data_from_json()
     restore_data(data)
     
-# Register the custom command group with the Flask application
+
 app.cli.add_command(custom_cli)
         
-# this runs the flask application on the development server
+
 if __name__ == "__main__":
     # change name for testing
     app.run(debug=True, host="0.0.0.0", port="8887")

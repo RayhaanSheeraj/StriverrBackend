@@ -1,40 +1,43 @@
+from flask import Flask, jsonify, request
+from flask import Blueprint, request, jsonify, current_app, Response, g
+from flask_restful import Api, Resource
+from __init__ import app
 import requests
+quotes_api = Blueprint('quotes_api', __name__, url_prefix='/api')
+api = Api(quotes_api)
 
-def get_quotes(api_key, category=None):
-    """
-    Fetches quotes from the API Ninjas quotes endpoint.
+API_URL = 'https://api.api-ninjas.com/v1/quotes'
+API_KEY = 'dsH4Bmo4W7wv5SVKvjbSRQ==mRJPmT9DcU5oqtI7'  
 
-    Args:
-        api_key (str): Your API key for authentication.
-        category (str, optional): A category to filter quotes (e.g., "inspirational", "love").
+@app.route('/get_quote', methods=['GET'])
+def get_quote():
+    
+    category = request.args.get('category', None)
+    headers = {'X-Api-Key': API_KEY}
+    
 
-    Returns:
-        dict: A dictionary containing the response data if the request is successful.
-        None: If the request fails, returns None.
-    """
-    api_url = 'https://api.api-ninjas.com/v1/quotes'
-
-
-    params = {'category': category} if category else {}
+    if category:
+        url = f"{API_URL}?category={category}"
+    else:
+        url = API_URL
 
     try:
-        response = requests.get(api_url, headers={'X-Api-Key': api_key}, params=params)
-        if response.status_code == requests.codes.ok:
-            return response.json()
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            
+            return jsonify(response.json()), 200
         else:
-            print("Error:", response.status_code, response.text)
-            return None
-    except requests.RequestException as e:
-        print("An error occurred:", e)
-        return None
+            
+            return jsonify({
+                "error": f"API request failed with status {response.status_code}",
+                "details": response.text
+            }), response.status_code
+    except Exception as e:
+        
+        return jsonify({"error": "An error occurred", "details": str(e)}), 500
 
-# Example usage
-if __name__ == "__main__":
-    API_KEY = 'dsH4Bmo4W7wv5SVKvjbSRQ==mRJPmT9DcU5oqtI7' 
-    category = "inspirational" #optional
-
-    quotes = get_quotes(API_KEY, category=category)
-
-    if quotes:
-        for i, quote in enumerate(quotes, start=1):
-            print(f"Quote {i}: {quote['quote']}\n - {quote['author']}\n")
+@app.route('/')
+def home():
+    return jsonify({"message": "Welcome to the Quotes API!"})
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=8887, debug=True)
