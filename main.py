@@ -28,6 +28,7 @@ from api.messages_api import messages_api # Adi added this, messages for his web
 from api.carphoto import car_api
 from api.carChat import car_chat_api
 from api.student import student_api
+from api.bucket_list import bucket_list_api
 from api.mood import mood_api
 
 from api.quotes import quotes_api
@@ -60,6 +61,7 @@ app.register_blueprint(nestImg_api)
 app.register_blueprint(vote_api)
 app.register_blueprint(car_api)
 app.register_blueprint(student_api)
+app.register_blueprint(bucket_list_api)
 app.register_blueprint(mood_api)
 app.register_blueprint(quotes_api)
 app.register_blueprint(hobby_api)
