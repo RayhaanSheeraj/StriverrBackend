@@ -59,11 +59,20 @@ class User(db.Model, UserMixin):
     _role = db.Column(db.String(20), default="User", nullable=False)
     _pfp = db.Column(db.String(255), unique=False, nullable=True)
     _car = db.Column(db.String(255), unique=False, nullable=True)
+<<<<<<< HEAD
+    _mood = db.Column(db.String(255), default="neutral", unique=False, nullable=True)
+=======
+    _steps = db.Column(db.Integer, unique=False, nullable=True)
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
    
     posts = db.relationship('Post', backref='author', lazy=True)
                                  
     
-    def __init__(self, name, uid, password="", role="User", pfp='', car='', email='?'):
+<<<<<<< HEAD
+    def __init__(self, name, uid, password="", role="User", pfp='', car='', email='?', mood="neutral"):
+=======
+    def __init__(self, name, uid, password="", role="User", pfp='', car='', steps=0, email='?'):
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
         """
         Constructor, 1st step in object creation.
         
@@ -81,6 +90,11 @@ class User(db.Model, UserMixin):
         self._role = role
         self._pfp = pfp
         self._car = car
+<<<<<<< HEAD
+        self._mood = mood
+=======
+        self._steps = steps
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
 
     # UserMixin/Flask-Login requires a get_id method to return the id as a string
     def get_id(self):
@@ -303,6 +317,24 @@ class User(db.Model, UserMixin):
     @car.setter
     def car(self, car):
         self._car = car
+<<<<<<< HEAD
+
+    @property
+    def mood(self):
+        return self._mood
+    @mood.setter
+    def mood(self, mood):
+        self._mood = mood
+=======
+    
+    @property
+    def steps(self):
+        return self._steps
+    @steps.setter
+    def steps(self, steps):
+        self._steps = steps
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
+
     def create(self, inputs=None):
         """
         Adds a new record to the table and commits the transaction.
@@ -337,7 +369,12 @@ class User(db.Model, UserMixin):
             "email": self.email,
             "role": self._role,
             "pfp": self._pfp,
-            "car": self._car
+            "car": self._car,
+<<<<<<< HEAD
+            "mood": self._mood
+=======
+            "steps": self._steps
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
         }
         return data
         
@@ -358,6 +395,7 @@ class User(db.Model, UserMixin):
         uid = inputs.get("uid", "")
         password = inputs.get("password", "")
         pfp = inputs.get("pfp", None)
+        mood = inputs.get("mood", None)
 
         # Update table with new data
         if name:
@@ -368,6 +406,15 @@ class User(db.Model, UserMixin):
             self.set_password(password)
         if pfp is not None:
             self.pfp = pfp
+<<<<<<< HEAD
+        if mood is not None:
+            self.mood = mood
+=======
+        steps = inputs.get("steps", None)
+        if steps is not None:
+            self.steps = steps
+
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
 
         # Check this on each update
         self.set_email()
@@ -505,7 +552,11 @@ def initUsers():
         db.create_all()
         """Tester data for table"""
         
-        u1 = User(name='Thomas Edison', uid=app.config['ADMIN_USER'], password=app.config['ADMIN_PASSWORD'], pfp='toby.png', car='toby_car.png', role="Admin")
+<<<<<<< HEAD
+        u1 = User(name='Thomas Edison', uid=app.config['ADMIN_USER'], password=app.config['ADMIN_PASSWORD'], pfp='toby.png', car='toby_car.png', role="Admin", mood="distressed")
+=======
+        u1 = User(name='Thomas Edison', uid=app.config['ADMIN_USER'], password=app.config['ADMIN_PASSWORD'], pfp='toby.png', car='toby_car.png', role="Admin", steps=1000)
+>>>>>>> 68a92bad9858b0e7c8454c7a150ec0ca3c73e9de
         u2 = User(name='Grace Hopper', uid=app.config['DEFAULT_USER'], password=app.config['DEFAULT_PASSWORD'], pfp='hop.png')
         u3 = User(name='Nicholas Tesla', uid='niko', password='123niko', pfp='niko.png' )
         users = [u1, u2, u3]
