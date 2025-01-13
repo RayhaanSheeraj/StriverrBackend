@@ -133,6 +133,8 @@ class UserAPI:
             user.update(body)
 
             return jsonify(user.read())
+        
+        
 
         @token_required("Admin")
         def delete(self):
@@ -241,6 +243,8 @@ class UserAPI:
             current_user = g.current_user
             ''' Return the current user as a json object '''
             return jsonify(current_user.read())
+    
+
 
 # Register the API resources with the Blueprint
 api.add_resource(UserAPI._ID, '/id')
