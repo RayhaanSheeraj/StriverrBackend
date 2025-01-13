@@ -234,23 +234,8 @@ def restore_data_command():
     restore_data(data)
     
 
-app.cli.add_command(custom_cli)
-
-# Start the Goaltrack API
-def start_goaltrack_api():
-    try:
-        goaltrack_path = os.path.join(os.path.dirname(__file__), 'api', 'goaltrack.py')
-        spec = importlib.util.spec_from_file_location("goaltrack", goaltrack_path)
-        goaltrack = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(goaltrack)
-
-        threading.Thread(target=goaltrack.run_api, daemon=True).start()
-        print("Goaltrack API started successfully in a separate thread.")
-    except Exception as e:
-        print(f"Failed to start Goaltrack API: {e}")
-        
+app.cli.add_command(custom_cli)        
 
 if __name__ == "__main__":
-    start_goaltrack_api()
     # this runs the flask application on the development server
     app.run(debug=True, host="0.0.0.0", port="8887")
