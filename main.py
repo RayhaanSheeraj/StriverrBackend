@@ -34,7 +34,7 @@ from api.quotes import quotes_api
 from api.vote import vote_api
 from api.hobby import hobby_api
 from api.step import step_api
-from api.goaltrack import goals_api
+# from api.goaltrack import goals_api
 
 # database Initialization functions
 from model.carChat import CarChat
@@ -67,7 +67,7 @@ app.register_blueprint(mood_api)
 app.register_blueprint(quotes_api)
 app.register_blueprint(hobby_api)
 app.register_blueprint(step_api)
-app.register_blueprint(goals_api)
+# app.register_blueprint(goals_api)
 
 login_manager.login_view = "login"
 
