@@ -167,14 +167,12 @@ custom_cli = AppGroup('custom', help='Custom commands')
 
 @custom_cli.command('generate_data')
 def generate_data():
+    initHobbies()
     initUsers()
     initSections()
     initGroups()
     initChannels()
     initPosts()
-    initNestPosts()
-    initVotes()
-    initHobbies()
     
 
 def backup_database(db_uri, backup_uri):

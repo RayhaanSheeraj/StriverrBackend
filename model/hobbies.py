@@ -1,7 +1,6 @@
 from __init__ import app, db
 from sqlalchemy.exc import IntegrityError
 import logging
-import json
 
 class Hobby(db.Model):
     
@@ -10,6 +9,17 @@ class Hobby(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     category = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, name, category):
+        """
+        Initialize a Hobby object.
+        
+        Args:
+            name (str): The name of the hobby.
+            category (str): The category of the hobby.
+        """
+        self.name = name
+        self.category = category
 
     def create(self):
         """
