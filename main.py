@@ -33,7 +33,7 @@ from api.mood import mood_api
 from api.quotes import quotes_api
 from api.vote import vote_api
 from api.hobby import hobby_api
-from api.step import step_api
+from api.steps import steps_api
 # from api.goaltrack import goals_api
 
 # database Initialization functions
@@ -43,6 +43,7 @@ from model.section import Section, initSections
 from model.group import Group, initGroups
 from model.channel import Channel, initChannels
 from model.post import Post, initPosts
+from model.steps import Steps, initSteps
 from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.vote import Vote, initVotes
 # server only Views
@@ -66,7 +67,7 @@ app.register_blueprint(bucket_list_api)
 app.register_blueprint(mood_api)
 app.register_blueprint(quotes_api)
 app.register_blueprint(hobby_api)
-app.register_blueprint(step_api)
+app.register_blueprint(steps_api)
 # app.register_blueprint(goals_api)
 
 login_manager.login_view = "login"
@@ -166,6 +167,7 @@ custom_cli = AppGroup('custom', help='Custom commands')
 
 @custom_cli.command('generate_data')
 def generate_data():
+    initSteps()
     initUsers()
     initSections()
     initGroups()
@@ -173,6 +175,7 @@ def generate_data():
     initPosts()
     initNestPosts()
     initVotes()
+    
     
 
 def backup_database(db_uri, backup_uri):
