@@ -46,6 +46,7 @@ from model.post import Post, initPosts
 from model.steps import Steps, initSteps
 from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.vote import Vote, initVotes
+from model.hobbies import Hobby, initHobbies
 # server only Views
 
 # register URIs for api endpoints
@@ -168,13 +169,12 @@ custom_cli = AppGroup('custom', help='Custom commands')
 @custom_cli.command('generate_data')
 def generate_data():
     initSteps()
+    initHobbies()
     initUsers()
     initSections()
     initGroups()
     initChannels()
     initPosts()
-    initNestPosts()
-    initVotes()
     
     
 
