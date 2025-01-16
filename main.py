@@ -45,6 +45,7 @@ from model.channel import Channel, initChannels
 from model.post import Post, initPosts
 from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.vote import Vote, initVotes
+from model.hobbies import Hobby, initHobbies
 # server only Views
 
 # register URIs for api endpoints
@@ -173,6 +174,7 @@ def generate_data():
     initPosts()
     initNestPosts()
     initVotes()
+    initHobbies()
     
 
 def backup_database(db_uri, backup_uri):

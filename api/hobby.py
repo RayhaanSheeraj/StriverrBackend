@@ -1,25 +1,20 @@
 import jwt
 from flask import Blueprint, request, jsonify, current_app, Response, g
-from flask_restful import Api, Resource  # used for REST API building
+from flask_restful import Api, Resource
 from datetime import datetime
-from __init__ import app
+from __init__ import app, db
 from api.jwt_authorize import token_required
-from model.user import User
+from model.hobbies import Hobby
 
 hobby_api = Blueprint('hobby_api', __name__, url_prefix='/api')
 api = Api(hobby_api)
 
-hobby_data = {
-    "general": ["Reading", "Writing", "Cooking", "Gardening"],
-    "sports": ["Football", "Basketball", "Tennis", "Swimming"],
-    "arts": ["Painting", "Drawing", "Photography", "Pottery"]
-}
-
-class Hobby(Resource):
+class HobbyResource(Resource):
     def get(self):
         category = request.args.get('category', 'general')
-        if category in hobby_data:
-            return jsonify({"category": category, "hobbies": hobby_data[category]})
+        hobbies = Hobby.query.filter_by(category=category).all()
+        if hobbies:
+            return jsonify({"category": category, "hobbies": [hobby.name for hobby in hobbies]})
         else:
             return jsonify({"message": "Category not found"}), 404
     
@@ -28,61 +23,39 @@ class Hobby(Resource):
         if not data or not data.get('name') or not data.get('category'):
             return jsonify({"message": "Hobby name and category are required"}), 400
         
-        category = data['category']
-        hobby_name = data['name']
-        
-        # Add hobby to the respective category
-        if category in hobby_data:
-            hobby_data[category].append(hobby_name)
+        hobby = Hobby(name=data['name'], category=data['category'])
+        if hobby.create():
+            return jsonify({"message": "Hobby created", "hobby": hobby.name, "category": hobby.category})
         else:
-            hobby_data[category] = [hobby_name]
-        
-        return jsonify({"message": "Hobby created", "hobby": hobby_name, "category": category})
+            return jsonify({"message": "Error creating hobby"}), 500
 
-    # Update an existing hobby
     def put(self):
         data = request.get_json()
-        if not data or not data.get('name') or not data.get('category'):
-            return jsonify({"message": "Hobby name and category are required to update"}), 400
+        if not data or not data.get('name') or not data.get('category') or not data.get('old_name'):
+            return jsonify({"message": "Hobby name, old name, and category are required to update"}), 400
         
-        category = data['category']
-        old_hobby_name = data['old_name']
-        new_hobby_name = data['name']
+        hobby = Hobby.query.filter_by(name=data['old_name'], category=data['category']).first()
+        if not hobby:
+            return jsonify({"message": "Hobby not found"}), 404
+        
+        hobby.name = data['name']
+        if hobby.update():
+            return jsonify({"message": "Hobby updated", "old_name": data['old_name'], "new_name": hobby.name})
+        else:
+            return jsonify({"message": "Error updating hobby"}), 500
 
-        # Check if the category exists
-        if category not in hobby_data:
-            return jsonify({"message": "Category not found"}), 404
-        
-        # Check if the old hobby exists
-        if old_hobby_name not in hobby_data[category]:
-            return jsonify({"message": "Old hobby not found in this category"}), 404
-        
-        # Update hobby in the category
-        index = hobby_data[category].index(old_hobby_name)
-        hobby_data[category][index] = new_hobby_name
-        
-        return jsonify({"message": "Hobby updated", "old_name": old_hobby_name, "new_name": new_hobby_name})
-
-    # Delete a hobby
     def delete(self):
         data = request.get_json()
         if not data or not data.get('name') or not data.get('category'):
             return jsonify({"message": "Hobby name and category are required to delete"}), 400
         
-        category = data['category']
-        hobby_name = data['name']
+        hobby = Hobby.query.filter_by(name=data['name'], category=data['category']).first()
+        if not hobby:
+            return jsonify({"message": "Hobby not found"}), 404
         
-        # Check if the category exists
-        if category not in hobby_data:
-            return jsonify({"message": "Category not found"}), 404
-        
-        # Check if the hobby exists in the category
-        if hobby_name not in hobby_data[category]:
-            return jsonify({"message": "Hobby not found in this category"}), 404
-        
-        # Remove hobby from the category
-        hobby_data[category].remove(hobby_name)
-        
-        return jsonify({"message": "Hobby deleted", "name": hobby_name})
+        if hobby.delete():
+            return jsonify({"message": "Hobby deleted", "name": hobby.name})
+        else:
+            return jsonify({"message": "Error deleting hobby"}), 500
 
-api.add_resource(Hobby, '/hobby')
+api.add_resource(HobbyResource, '/hobby')
