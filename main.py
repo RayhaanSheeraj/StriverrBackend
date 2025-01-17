@@ -1,5 +1,3 @@
-# imports from flask
-# Brawl stars is amazing
 import json
 import os
 from urllib.parse import urljoin, urlparse
@@ -46,6 +44,7 @@ from model.post import Post, initPosts
 from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.vote import Vote, initVotes
 from model.hobbies import Hobby, initHobbies
+from model.quotes import Quote, initQuotes
 # server only Views
 
 # register URIs for api endpoints
@@ -173,6 +172,7 @@ def generate_data():
     initGroups()
     initChannels()
     initPosts()
+    initQuotes()
     
 
 def backup_database(db_uri, backup_uri):
@@ -193,6 +193,7 @@ def extract_data():
         data['groups'] = [group.read() for group in Group.query.all()]
         data['channels'] = [channel.read() for channel in Channel.query.all()]
         data['posts'] = [post.read() for post in Post.query.all()]
+        data['quotes'] = [quote.to_dict() for quote in Quote.query.all()]
     return data
 
 

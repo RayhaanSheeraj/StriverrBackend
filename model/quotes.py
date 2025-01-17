@@ -1,81 +1,56 @@
-from flask import Blueprint, request, jsonify, g
-from flask_restful import Api, Resource
-from api.jwt_authorize import token_required  # Assuming this is your JWT middleware
-import requests
+from datetime import datetime
+from __init__ import db
 
-# Define the Blueprint for Quotes API
-quotes_api = Blueprint('quotes_api', __name__, url_prefix='/api')
-api = Api(quotes_api)
-
-# API configuration
-API_URL = 'https://api.api-ninjas.com/v1/quotes'
-API_KEY = 'dsH4Bmo4W7wv5SVKvjbSRQ==mRJPmT9DcU5oqtI7'
-
-class QuotesAPI:
+class Quote(db.Model):
     """
-    Define the API CRUD endpoints for the Quotes service.
-    There are three operations that correspond to HTTP methods:
-    - GET (Single): Retrieve a single quote by category or default.
-    - GET (Bulk): Retrieve multiple quotes in bulk.
-    - POST (Filter): Filter quotes based on specific criteria.
+    Quote Model
+
+    Represents a single quote retrieved from the external API.
+
+    Attributes:
+        id (db.Column): Primary key, a unique identifier for the quote.
+        text (db.Column): The text of the quote.
+        author (db.Column): The author of the quote.
+        category (db.Column): The category of the quote, if provided.
+        fetched_at (db.Column): Timestamp of when the quote was fetched.
     """
+    __tablename__ = 'quotes'
 
-    class _CRUD(Resource):
-        @token_required()
-        def get(self):
-            """
-            Retrieve a single quote by category or default.
-            """
-            category = request.args.get('category', None)
-            headers = {'X-Api-Key': API_KEY}
-            url = f"{API_URL}?category={category}" if category else API_URL
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    text = db.Column(db.Text, nullable=False)
+    author = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50), nullable=True)
+    fetched_at = db.Column(db.DateTime, nullable=False)
 
-            try:
-                response = requests.get(url, headers=headers)
-                if response.status_code == 200:
-                    return jsonify(response.json())
-                return {
-                    "error": f"API request failed with status {response.status_code}",
-                    "details": response.text
-                }, response.status_code
-            except Exception as e:
-                return {"error": "An error occurred", "details": str(e)}, 500
+    def __init__(self, text, author, category, fetched_at):
+        self.text = text
+        self.author = author
+        self.category = category
+        self.fetched_at = fetched_at
 
-        def post(self):
-            """
-            Retrieve multiple quotes in bulk or filter quotes.
-            """
-            data = request.get_json()
-            category = data.get('category', None)
-            count = int(data.get('count', 5))
-            headers = {'X-Api-Key': API_KEY}
-            quotes = []
 
-            try:
-                for _ in range(count):
-                    url = f"{API_URL}?category={category}" if category else API_URL
-                    response = requests.get(url, headers=headers)
-                    if response.status_code == 200:
-                        quotes.extend(response.json())
-                    else:
-                        return {
-                            "error": f"API request failed with status {response.status_code}",
-                            "details": response.text
-                        }, response.status_code
-                return jsonify(quotes)
-            except Exception as e:
-                return {"error": "An error occurred", "details": str(e)}, 500
+def create(text, author, category):
+    """
+    Save a new quote to the database.
 
-        @token_required()
-        def delete(self):
-            """
-            Clear the user's quote history or simulate deletion.
-            """
-            return {"message": "Quote history cleared or simulated deletion successful."}, 200
+    Args:
+        text (str): The text of the quote.
+        author (str): The author of the quote.
+        category (str): The category of the quote.
 
-api.add_resource(QuotesAPI._CRUD, '/quotes')
-
-if __name__ == '__main__':
-    from __init__ import app
-    app.register_blueprint(quotes_api)
-    app.run(debug=True)
+    Returns:
+        Quote: The saved quote instance.
+    """
+    quote = Quote(
+        text=text,
+        author=author,
+        category=category,
+        fetched_at=datetime.utcnow()
+    )
+    try:
+        db.session.add(quote)
+        db.session.commit()
+        return quote
+    except Exception as e:
+        db.session.rollback()
+        raise e
