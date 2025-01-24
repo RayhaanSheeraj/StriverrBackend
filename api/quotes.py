@@ -4,7 +4,7 @@ from api.jwt_authorize import token_required  # Assuming this is your JWT middle
 import requests
 from datetime import datetime
 from __init__ import db
-from .models.quotes import create  # type: ignore # Import the create function from the model
+from model.quotes import create  # type: ignore # Import the create function from the model
 
 # Define the Blueprint for Quotes API
 quotes_api = Blueprint('quotes_api', __name__, url_prefix='/api')
