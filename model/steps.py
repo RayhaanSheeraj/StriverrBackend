@@ -56,7 +56,16 @@ class Steps(db.Model):
         except Exception as e:
             db.session.rollback()
             raise e
-
+    def delete(self):
+        """
+        Deletes the chat message from the database.
+        """
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
     def read(self):
         """
         The read method retrieves the object data from the object's attributes and returns it as a dictionary.
@@ -69,7 +78,6 @@ class Steps(db.Model):
             'user': self.user,
             'steps': self.steps
         }
-
 def initSteps():
     """
     The initSteps function creates the Steps table and adds tester data to the table.
