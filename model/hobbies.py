@@ -67,6 +67,46 @@ class Hobby(db.Model):
             db.session.rollback()
             return False
 
+    def read(self):
+        """
+        Read the hobby data.
+        
+        Returns:
+            dict: A dictionary representation of the hobby.
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "category": self.category
+        }
+
+    @staticmethod
+    def restore(data):
+        """
+        Restore hobbies from a list of dictionaries, replacing existing entries.
+
+        Args:
+            data (list): List of dictionaries containing hobby data.
+
+        Returns:
+            dict: Dictionary of restored Hobby objects.
+        """
+        with app.app_context():
+            # Clear the existing table
+            db.session.query(Hobby).delete()
+            db.session.commit()
+
+            restored_hobbies = {}
+            for hobby_data in data:
+                hobby = Hobby(
+                    name=hobby_data['name'],
+                    category=hobby_data['category']
+                )
+                hobby.create()
+                restored_hobbies[hobby_data['id']] = hobby
+
+            return restored_hobbies
+
 def initHobbies():
     """
     The initHobbies function creates the Hobby table and adds tester data to the table.
