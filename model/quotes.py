@@ -1,56 +1,91 @@
-from datetime import datetime
-from __init__ import db
+from __init__ import app, db
+from sqlalchemy.exc import IntegrityError
+import logging
 
-class Quote(db.Model):
-    """
-    Quote Model
+class quote(db.Model):
+    __tablename__ = 'quote'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
 
-    Represents a single quote retrieved from the external API.
-
-    Attributes:
-        id (db.Column): Primary key, a unique identifier for the quote.
-        text (db.Column): The text of the quote.
-        author (db.Column): The author of the quote.
-        category (db.Column): The category of the quote, if provided.
-        fetched_at (db.Column): Timestamp of when the quote was fetched.
-    """
-    __tablename__ = 'quotes'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    text = db.Column(db.Text, nullable=False)
-    author = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(50), nullable=True)
-    fetched_at = db.Column(db.DateTime, nullable=False)
-
-    def __init__(self, text, author, category, fetched_at):
-        self.text = text
-        self.author = author
+    def __init__(self, name, category):
+        self.name = name
         self.category = category
-        self.fetched_at = fetched_at
 
+    def create(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error creating quote: {e}")
+            db.session.rollback()
+            return False
 
-def create(text, author, category):
-    """
-    Save a new quote to the database.
+    def update(self):
+        try:
+            db.session.commit()
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error updating quote: {e}")
+            db.session.rollback()
+            return False
 
-    Args:
-        text (str): The text of the quote.
-        author (str): The author of the quote.
-        category (str): The category of the quote.
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error deleting quote: {e}")
+            db.session.rollback()
+            return False
 
-    Returns:
-        Quote: The saved quote instance.
-    """
-    quote = Quote(
-        text=text,
-        author=author,
-        category=category,
-        fetched_at=datetime.utcnow()
-    )
-    try:
-        db.session.add(quote)
-        db.session.commit()
-        return quote
-    except Exception as e:
-        db.session.rollback()
-        raise e
+    def read(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "category": self.category
+        }
+
+    @staticmethod
+    def restore(data):
+        with app.app_context():
+            db.session.query(Quote).delete()
+            db.session.commit()
+
+            restored_quotes = {}
+            for quote_data in data:
+                quote = Quote(
+                    name=quote_data['name'],
+                    category=quote_data['category']
+                )
+                quote.create()
+                restored_quotes[quote_data['id']] = quote
+
+            return restored_quotes
+
+def init_quotes():
+    with app.app_context():
+        db.create_all()
+        
+        quotes = [
+            {"name": "Quote 1", "category": "1"},
+            {"name": "Quote 2", "category": "2"},
+            {"name": "Quote 3", "category": "3"},
+            {"name": "Quote 4", "category": "4"},
+            {"name": "Quote 5", "category": "5"},
+            {"name": "Quote 6", "category": "6"},
+        ]
+
+        for quote_data in quotes:
+            quote = Quote(name=quote_data["name"], category=quote_data["category"])
+            try:
+                db.session.add(quote)
+                db.session.commit()
+            except IntegrityError as e:
+                logging.error(f"Error creating quote: {e}")
+                db.session.rollback()
+
+        print("Database has been initialized and populated with initial quote data.")

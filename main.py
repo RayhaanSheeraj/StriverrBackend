@@ -1,7 +1,7 @@
 import json
 import os
 from urllib.parse import urljoin, urlparse
-from flask import abort, redirect, render_template, request, send_from_directory, url_for, jsonify  # import render_template from "public" flask libraries
+from flask import abort, redirect, render_template, request, send_from_directory, url_for, jsonify
 from flask_login import current_user, login_user, logout_user
 from flask.cli import AppGroup
 from flask_login import current_user, login_required
@@ -11,18 +11,18 @@ import shutil
 import threading
 import importlib.util
 
-from __init__ import app, db, login_manager 
+from __init__ import app, db, login_manager
 # API endpoints
 from api.user import user_api
 from api.pfp import pfp_api
-from api.nestImg import nestImg_api # Justin added this, custom format for his website
+from api.nestImg import nestImg_api
 from api.achievements import post_api
 from api.challenges import challenges_api
 from api.channel import channel_api
 from api.group import group_api
 from api.section import section_api
-from api.nestPost import nestPost_api # Justin added this, custom format for his website
-from api.messages_api import messages_api # Adi added this, messages for his website
+from api.nestPost import nestPost_api
+from api.messages_api import messages_api
 from api.carphoto import car_api
 from api.carChat import car_chat_api
 from api.student import student_api
@@ -32,7 +32,6 @@ from api.quotes import quotes_api
 from api.vote import vote_api
 from api.hobby import hobby_api
 from api.steps import steps_api
-# from api.goaltrack import goals_api
 
 # database Initialization functions
 from model.carChat import CarChat
@@ -42,16 +41,15 @@ from model.group import Group, initGroups
 from model.channel import Channel, initChannels
 from model.post import Post, initPosts
 from model.steps import Steps, initSteps
-from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
+from model.nestPost import NestPost, initNestPosts
 from model.vote import Vote, initVotes
 from model.hobbies import Hobby, initHobbies
-#from model.quotes import Quote, initQuotes
-# server only Views
+from model.quotes import quote, init_quotes
 
 # register URIs for api endpoints
-app.register_blueprint(messages_api) # Adi added this, messages for his website
+app.register_blueprint(messages_api)
 app.register_blueprint(user_api)
-app.register_blueprint(pfp_api) 
+app.register_blueprint(pfp_api)
 app.register_blueprint(post_api)
 app.register_blueprint(challenges_api)
 app.register_blueprint(channel_api)
@@ -68,7 +66,6 @@ app.register_blueprint(mood_api)
 app.register_blueprint(quotes_api)
 app.register_blueprint(hobby_api)
 app.register_blueprint(steps_api)
-# app.register_blueprint(goals_api)
 
 login_manager.login_view = "login"
 
@@ -83,7 +80,6 @@ def load_user(user_id):
 @app.context_processor
 def inject_user():
     return dict(current_user=current_user)
-
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -104,18 +100,17 @@ def login():
         else:
             error = 'Invalid username or password.'
     return render_template("login.html", error=error, next=next_page)
-    
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.errorhandler(404)  
+@app.errorhandler(404)
 def page_not_found(e):
-    
     return render_template('404.html'), 404
 
-@app.route('/')  
+@app.route('/')
 def index():
     print("Home:", current_user)
     return render_template("index.html")
@@ -132,11 +127,10 @@ def u2table():
     users = User.query.all()
     return render_template("u2table.html", user_data=users)
 
-
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
- 
+
 @app.route('/users/delete/<int:user_id>', methods=['DELETE'])
 @login_required
 def delete_user(user_id):
@@ -156,14 +150,11 @@ def reset_password(user_id):
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-
     if user.update({"password": app.config['DEFAULT_PASSWORD']}):
         return jsonify({'message': 'Password reset successfully'}), 200
     return jsonify({'error': 'Password reset failed'}), 500
 
-
 custom_cli = AppGroup('custom', help='Custom commands')
-
 
 @custom_cli.command('generate_data')
 def generate_data():
@@ -174,11 +165,9 @@ def generate_data():
     initGroups()
     initChannels()
     initPosts()
-    
-    
+    init_quotes()
 
 def backup_database(db_uri, backup_uri):
-    """Backup the current database."""
     if backup_uri:
         db_path = db_uri.replace('sqlite:///', 'instance/')
         backup_path = backup_uri.replace('sqlite:///', 'instance/')
@@ -197,8 +186,8 @@ def extract_data():
         data['posts'] = [post.read() for post in Post.query.all()]
         data['hobbies'] = [hobby.read() for hobby in Hobby.query.all()]
         data['steps'] = [steps.read() for steps in Steps.query.all()]
+        data['quotes'] = [quote.read() for quote in Quote.query.all()]
     return data
-
 
 def save_data_to_json(data, directory='backup'):
     if not os.path.exists(directory):
@@ -208,14 +197,12 @@ def save_data_to_json(data, directory='backup'):
             json.dump(records, f)
     print(f"Data backed up to {directory} directory.")
 
-
 def load_data_from_json(directory='backup'):
     data = {}
-    for table in ['users', 'sections', 'groups', 'channels', 'posts', 'hobbies','steps']:
+    for table in ['users', 'sections', 'groups', 'channels', 'posts', 'hobbies', 'steps', 'quotes']:
         with open(os.path.join(directory, f'{table}.json'), 'r') as f:
             data[table] = json.load(f)
     return data
-
 
 def restore_data(data):
     with app.app_context():
@@ -226,8 +213,8 @@ def restore_data(data):
         _ = Post.restore(data['posts'])
         _ = Hobby.restore(data['hobbies'])
         _ = Steps.restore(data['steps'])
+        _ = Quote.restore(data['quotes'])
     print("Data restored to the new database.")
-
 
 @custom_cli.command('backup_data')
 def backup_data():
@@ -235,15 +222,12 @@ def backup_data():
     save_data_to_json(data)
     backup_database(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_BACKUP_URI'])
 
-
 @custom_cli.command('restore_data')
 def restore_data_command():
     data = load_data_from_json()
     restore_data(data)
-    
 
-app.cli.add_command(custom_cli)        
+app.cli.add_command(custom_cli)
 
 if __name__ == "__main__":
-    # this runs the flask application on the development server
     app.run(debug=True, host="0.0.0.0", port="8887")
