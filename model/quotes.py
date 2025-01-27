@@ -2,7 +2,7 @@ from __init__ import app, db
 from sqlalchemy.exc import IntegrityError
 import logging
 
-class quote(db.Model):
+class Quote(db.Model):
     __tablename__ = 'quote'
     
     id = db.Column(db.Integer, primary_key=True)

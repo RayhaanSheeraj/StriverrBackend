@@ -44,7 +44,7 @@ from model.steps import Steps, initSteps
 from model.nestPost import NestPost, initNestPosts
 from model.vote import Vote, initVotes
 from model.hobbies import Hobby, initHobbies
-from model.quotes import quote, init_quotes
+from model.quotes import init_quotes, Quote
 
 # register URIs for api endpoints
 app.register_blueprint(messages_api)
