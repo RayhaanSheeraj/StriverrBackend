@@ -78,6 +78,32 @@ class Steps(db.Model):
             'user': self.user,
             'steps': self.steps
         }
+    @staticmethod
+    def restore(data):
+        """
+        Restore steps from a list of dictionaries, replacing existing entries.
+
+        Args:
+            data (list): List of dictionaries containing steps data.
+
+        Returns:
+            dict: Dictionary of restored Steps objects.
+        """
+        with app.app_context():
+            # Clear the existing table
+            db.session.query(Steps).delete()
+            db.session.commit()
+
+            restored_steps = {}
+            for steps_data in data:
+                steps = Steps(
+                    user=steps_data['user'],
+                    steps=steps_data['steps']
+                )
+                steps.create()
+                restored_steps[steps_data['id']] = steps
+
+            return restored_steps
 def initSteps():
     """
     The initSteps function creates the Steps table and adds tester data to the table.
