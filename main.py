@@ -160,12 +160,12 @@ custom_cli = AppGroup('custom', help='Custom commands')
 def generate_data():
     initSteps()
     initHobbies()
+    init_quotes()
     initUsers()
     initSections()
     initGroups()
     initChannels()
     initPosts()
-    init_quotes()
 
 def backup_database(db_uri, backup_uri):
     if backup_uri:
