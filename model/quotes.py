@@ -71,12 +71,12 @@ def init_quotes():
         db.create_all()
         
         quotes = [
-            {"name": "Quote 1", "category": "1"},
-            {"name": "Quote 2", "category": "2"},
-            {"name": "Quote 3", "category": "3"},
-            {"name": "Quote 4", "category": "4"},
-            {"name": "Quote 5", "category": "5"},
-            {"name": "Quote 6", "category": "6"},
+            {"name": "Quote 1", "category": "Motivation"},
+            {"name": "Quote 2", "category": "Mental Health"},
+            {"name": "Quote 3", "category": "Happiness"},
+            {"name": "Quote 4", "category": "Sports"},
+            {"name": "Quote 5", "category": "School"},
+            {"name": "Quote 6", "category": "All"},
         ]
 
         for quote_data in quotes:
