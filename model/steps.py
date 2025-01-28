@@ -78,6 +78,19 @@ class Steps(db.Model):
             'user': self.user,
             'steps': self.steps
         }
+    def update(self):
+        """
+        Update an existing hobby in the database.
+        
+        Returns:
+            bool: True if the hobby was successfully updated, False otherwise.
+        """
+        try:
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            return False
     @staticmethod
     def restore(data):
         """
