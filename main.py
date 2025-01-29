@@ -23,8 +23,6 @@ from api.group import group_api
 from api.section import section_api
 from api.nestPost import nestPost_api
 from api.messages_api import messages_api
-from api.carphoto import car_api
-from api.carChat import car_chat_api
 from api.student import student_api
 from api.bucket_list import bucket_list_api
 from api.mood import mood_api
@@ -34,7 +32,6 @@ from api.hobby import hobby_api
 from api.steps import steps_api
 
 # database Initialization functions
-from model.carChat import CarChat
 from model.user import User, initUsers
 from model.section import Section, initSections
 from model.group import Group, initGroups
@@ -55,11 +52,9 @@ app.register_blueprint(challenges_api)
 app.register_blueprint(channel_api)
 app.register_blueprint(group_api)
 app.register_blueprint(section_api)
-app.register_blueprint(car_chat_api)
 app.register_blueprint(nestPost_api)
 app.register_blueprint(nestImg_api)
 app.register_blueprint(vote_api)
-app.register_blueprint(car_api)
 app.register_blueprint(student_api)
 app.register_blueprint(bucket_list_api)
 app.register_blueprint(mood_api)
