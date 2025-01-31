@@ -71,12 +71,13 @@ def init_quotes():
         db.create_all()
         
         quotes = [
-            {"name": "Quote 1", "category": "Motivation"},
-            {"name": "Quote 2", "category": "Mental Health"},
-            {"name": "Quote 3", "category": "Happiness"},
-            {"name": "Quote 4", "category": "Sports"},
-            {"name": "Quote 5", "category": "School"},
-            {"name": "Quote 6", "category": "All"},
+            {"name": "The only way to do great work is to love what you do.", "category": "Motivation"},
+            {"name": "Don't watch the clock; do what it does. Keep going.", "category": "Motivation"},
+            {"name": "Never give up on something you cant go a day without thinking about.", "category": "Mental Health"},
+            {"name": "Success is not the key to happiness. Happiness is the key to success.", "category": "Happiness"},
+            {"name": "Winning isnt everything, but wanting to win is", "category": "Sports"},
+            {"name": "Hard work beats talent when talent doesnt work hard.", "category": "School"},
+            {"name": "Happiness is not by chance, but by choice", "category": "All"},
         ]
 
         for quote_data in quotes:
