@@ -48,5 +48,23 @@ class MoodAPI:
             except Exception as e:
                 return {'message': 'Failed to process mood', 'error': str(e)}, 500
 
+    class _RestoreMood(Resource):
+        """
+        API operation for restoring (erasing) the mood entry.
+        """
+        @token_required()
+        def post(self):
+            current_user = g.current_user
+            try:
+                existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
+                if existing_mood:
+                    existing_mood.mood = None  # Erase mood column
+                    existing_mood.create()
+                    return jsonify({'message': 'Mood erased successfully'})
+                return jsonify({'message': 'No mood entry found'}), 404
+            except Exception as e:
+                return {'message': 'Failed to erase mood', 'error': str(e)}, 500
+
 # Register the API resources with the Blueprint
 api.add_resource(MoodAPI._Mood, '/mood')
+api.add_resource(MoodAPI._RestoreMood, '/mood/restore')

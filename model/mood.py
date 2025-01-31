@@ -27,3 +27,14 @@ class Mood(db.Model):
             'mood': self.mood,
             'user_id': self.user_id,
         }
+
+    def clear(self):
+        """
+        Clears the mood entry by deleting the row from the database.
+        """
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
