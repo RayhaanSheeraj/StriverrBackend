@@ -1,7 +1,7 @@
 from sqlite3 import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from __init__ import app, db
-
+# coolfacts DATABASE
 class CoolFacts (db.Model):
     """
     CoolFacts Model
