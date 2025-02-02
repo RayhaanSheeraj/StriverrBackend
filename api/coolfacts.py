@@ -35,7 +35,7 @@ class CoolFactsAPI:
             # Find the current post from the database table(s)
             post = CoolFacts.query.get(data['id'])
             # Update the post
-            post._age = data['age']
+            post.age = data['age']
             post.coolfacts = data['coolfacts']
             # Save the post
             post.update()
