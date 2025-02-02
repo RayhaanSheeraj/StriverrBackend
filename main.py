@@ -27,6 +27,7 @@ from api.messages_api import messages_api # Adi added this, messages for his web
 from api.carphoto import car_api
 from api.carChat import car_chat_api
 from api.facts import get_facts
+from api.coolfacts import CoolFacts_api
 
 from api.vote import vote_api
 # database Initialization functions
@@ -38,6 +39,7 @@ from model.channel import Channel, initChannels
 from model.post import Post, initPosts
 from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.vote import Vote, initVotes
+from model.coolfacts import CoolFacts, initCoolFacts
 
 # server only Views
 
@@ -55,6 +57,7 @@ app.register_blueprint(nestPost_api)
 app.register_blueprint(nestImg_api)
 app.register_blueprint(vote_api)
 app.register_blueprint(car_api)
+app.register_blueprint(CoolFacts_api)
 
 # Tell Flask-Login the view function name of your login route
 login_manager.login_view = "login"
@@ -156,6 +159,7 @@ custom_cli = AppGroup('custom', help='Custom commands')
 @custom_cli.command('generate_data')
 def generate_data():
     initUsers()
+    initCoolFacts()
     initSections()
     initGroups()
     initChannels()
@@ -183,6 +187,7 @@ def extract_data():
         data['groups'] = [group.read() for group in Group.query.all()]
         data['channels'] = [channel.read() for channel in Channel.query.all()]
         data['posts'] = [post.read() for post in Post.query.all()]
+        data['coolfacts'] = [coolfact.read() for coolfact in CoolFacts.query.all()]
     return data
 
 # Save extracted data to JSON files
@@ -197,7 +202,7 @@ def save_data_to_json(data, directory='backup'):
 # Load data from JSON files
 def load_data_from_json(directory='backup'):
     data = {}
-    for table in ['users', 'sections', 'groups', 'channels', 'posts']:
+    for table in ['users', 'sections', 'groups', 'channels', 'posts', 'coolfacts']:
         with open(os.path.join(directory, f'{table}.json'), 'r') as f:
             data[table] = json.load(f)
     return data
@@ -210,6 +215,7 @@ def restore_data(data):
         _ = Group.restore(data['groups'], users)
         _ = Channel.restore(data['channels'])
         _ = Post.restore(data['posts'])
+        _ = CoolFacts.restore(data['coolfacts'])
     print("Data restored to the new database.")
 
 # Define a command to backup data
