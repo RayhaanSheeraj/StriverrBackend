@@ -12,7 +12,7 @@ This Blueprint object is used to define APIs for the Post model.
 - Blueprint is used to modularize application files.
 - This Blueprint is registered to the Flask app in main.py.
 """
-post_api = Blueprint('post_api', __name__, url_prefix='/api')
+challenges_api = Blueprint('challenges_api', __name__, url_prefix='/api')
 
 """
 The Api object is connected to the Blueprint object to define the API endpoints.
@@ -20,9 +20,9 @@ The Api object is connected to the Blueprint object to define the API endpoints.
 - The objects added are mapped to code that contains the actions for the API.
 - For more information, refer to the API docs: https://flask-restful.readthedocs.io/en/latest/api.html
 """
-api = Api(post_api)
+api = Api(challenges_api)
 
-class PostAPI:
+class ChallengesAPI:
     """
     Define the API CRUD endpoints for the Post model.
     There are four operations that correspond to common HTTP methods:
