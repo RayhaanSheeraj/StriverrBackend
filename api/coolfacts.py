@@ -4,8 +4,8 @@ from __init__ import app  # Ensure __init__.py initializes your Flask app
 from model.coolfacts import CoolFacts
 from api.jwt_authorize import token_required
 # Blueprint for the API
-CoolFacts_api = Blueprint('CoolFacts_api', __name__, url_prefix='/api')
-api = Api(CoolFacts_api)  # Attach Flask-RESTful API to the Blueprint
+coolfacts_api = Blueprint('coolfacts_api', __name__, url_prefix='/api')
+api = Api(coolfacts_api)  # Attach Flask-RESTful API to the Blueprint
 class CoolFactsAPI:
     """
     Define the API CRUD endpoints for the Post model.

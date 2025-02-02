@@ -64,21 +64,20 @@ class CoolFacts (db.Model):
             raise e
     @staticmethod
     def restore(data):
-        existing_sections = {section.id: section for section in CoolFacts.query.all()}
-        for section_data in data:
-            age = section_data.pop('age', None)  # Remove 'id' from section_data
-            coolfacts = section_data.get("coolfacts", None)
-            section = existing_sections.pop(coolfacts, None)
-            if section:
-                section.update(section_data)
-            else:
-                section = CoolFacts(**section_data)
-                section.create()
-        # Remove any extra data that is not in the backup
-        for section in existing_sections.values():
-            db.session.delete(section)
-        db.session.commit()
-        return existing_sections
+        with app.app_context():
+            db.session.query(CoolFacts).delete()
+            db.session.commit()
+
+            restored_facts = {}
+            for fact_data in data:
+                fact = CoolFacts(
+                    coolfacts=fact_data['coolfacts'],
+                    age=fact_data['age']
+                )
+                fact.create()
+                restored_facts[fact_data['id']] = fact
+
+            return restored_facts
 def initCoolFacts():
     """
     Initializes the QuizCreation table and inserts test data for development purposes.
