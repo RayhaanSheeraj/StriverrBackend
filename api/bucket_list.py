@@ -1,91 +1,91 @@
 from flask import Blueprint, request, jsonify, g
 from flask_restful import Api, Resource
+from flask_cors import CORS
 from __init__ import app, db
 from api.jwt_authorize import token_required
-from model.bucket_list import bucket_list
+from model.bucket_list import BucketList
 
 bucket_list_api = Blueprint('bucket_list_api', __name__, url_prefix='/api')
+CORS(bucket_list_api)
 api = Api(bucket_list_api)
 
-class BucketList(Resource):
-    @token_required
-    def get(self):
-        """
-        Retrieve all bucket list items.
-        """
-        current_user = g.current_user  # Ensure user is extracted
-        if not current_user:
-            return jsonify({"message": "Unauthorized: User not found"}), 401
+class BucketListAPI:
+    class _CRUD(Resource):
 
-        bucket_list_items = bucket_list.query.filter_by(user=current_user.id).all()
-        all_items = str([item.read() for item in bucket_list_items])
-        return jsonify(all_items)
-    
-    @token_required
-    def post(self):
-        """
-        Create a new bucket list item.
-        """
-        current_user = g.current_user
-        if not current_user:
-            return jsonify({"message": "Unauthorized: User not found"}), 401
-        
-        data = request.get_json()
-        if not data or not data.get('title'):
-            return jsonify({"message": "Title is required"}), 400
-        
-        bucket_list_item = bucket_list(
-            title=data['title'],
-            description=data.get('description', ''),
-            status=data.get('status', 'Pending'),
-            user=current_user.id
-        )
-        bucket_list_item.create()
-        return jsonify(bucket_list_item.read())
+        def get(self):
 
-    @token_required
-    def put(self):
-        """
-        Update a bucket list item.
-        """
-        current_user = g.current_user
-        if not current_user:
-            return jsonify({"message": "Unauthorized: User not found"}), 401
+            bucket_id = request.args.get('id')
 
-        data = request.get_json()
-        if not data or not data.get('id'):
-            return jsonify({"message": "ID is required"}), 400
+            if bucket_id:
+
+                bucketlist = BucketList.query.get(bucket_id)
+                if not bucketlist:
+                    return {'message': 'Bucket list not found'}, 404
+                return jsonify(bucketlist.read())
+
+            all_bucketlists = BucketList.query.all()
+            return jsonify([bucketlist.read() for bucketlist in all_bucketlists])
         
-        bucket_list_item = bucket_list.query.filter_by(id=data['id'], user=current_user.id).first()
-        if bucket_list_item:
-            bucket_list_item.update(
-                title=data.get('title'),
-                description=data.get('description'),
-                status=data.get('status')
+
+        def post(self):
+            """
+            Create a new bucket list item.
+            """
+            current_user = g.current_user
+            if not current_user:
+                return jsonify({"message": "Unauthorized: User not found"}), 401
+            
+            data = request.get_json()
+            if not data or not data.get('title'):
+                return jsonify({"message": "Title is required"}), 400
+            
+            bucket_list_item = BucketList(
+                title=data['title'],
+                description=data.get('description', ''),
+                status=data.get('status', 'Pending'),
+                user=current_user.id
             )
+            bucket_list_item.create()
             return jsonify(bucket_list_item.read())
-        return jsonify({'message': 'Item not found or unauthorized'}), 404
 
-    @token_required
-    def delete(self):
-        """
-        Delete a bucket list item.
-        """
-        current_user = g.current_user
-        if not current_user:
-            return jsonify({"message": "Unauthorized: User not found"}), 401
+        def put(self):
+            """
+            Update a bucket list item.
+            """
+            current_user = g.current_user
+            if not current_user:
+                return jsonify({"message": "Unauthorized: User not found"}), 401
 
-        data = request.get_json()
-        if not data or not data.get('id'):
-            return jsonify({"message": "ID is required"}), 400
-        
-        bucket_list_item = bucket_list.query.filter_by(id=data['id'], user=current_user.id).first()
-        if bucket_list_item:
-            bucket_list_item.delete()
-            return jsonify({'message': 'Item deleted successfully'})
-        return jsonify({'message': 'Item not found or unauthorized'}), 404
+            data = request.get_json()
+            if not data or not data.get('id'):
+                return jsonify({"message": "ID is required"}), 400
+            
+            bucket_list_item = BucketList.query.filter_by(id=data['id'], user=current_user.id).first()
+            if bucket_list_item:
+                bucket_list_item.update(
+                    title=data.get('title'),
+                    description=data.get('description'),
+                    status=data.get('status')
+                )
+                return jsonify(bucket_list_item.read())
+            return jsonify({'message': 'Item not found or unauthorized'}), 404
 
-api.add_resource(BucketList, '/bucketlist')
+        def delete(self):
+            """
+            Delete a bucket list item.
+            """
+            current_user = g.current_user
+            if not current_user:
+                return jsonify({"message": "Unauthorized: User not found"}), 401
 
-if __name__ == '__main__':
-    app.run(debug=True)
+            data = request.get_json()
+            if not data or not data.get('id'):
+                return jsonify({"message": "ID is required"}), 400
+            
+            bucket_list_item = BucketList.query.filter_by(id=data['id'], user=current_user.id).first()
+            if bucket_list_item:
+                bucket_list_item.delete()
+                return jsonify({'message': 'Item deleted successfully'})
+            return jsonify({'message': 'Item not found or unauthorized'}), 404
+
+    api.add_resource(_CRUD, '/bucketlist')

@@ -1,7 +1,7 @@
 
 from __init__ import db, app
 
-class bucket_list(db.Model):
+class BucketList(db.Model):
     __tablename__ = 'bucketlists'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -17,7 +17,7 @@ class bucket_list(db.Model):
         self.user = user
 
     def __repr__(self):
-        return f"bucket_list(id={self.id}, title={self.title}, description={self.description}, status={self.status}, user={self.user})"
+        return f"BucketList(id={self.id}, title={self.title}, description={self.description}, status={self.status}, user={self.user})"
 
     def create(self):
         """
@@ -43,16 +43,15 @@ class bucket_list(db.Model):
             "user": self.user
         }
 
-    def update(self, title=None, description=None, status=None):
+    def update(self, data):
         """
         Update the bucket list item with new data.
         """
-        if title:
-            self.title = title
-        if description:
-            self.description = description
-        if status:
-            self.status = status
+        self.title = data.get('title', self.title)
+        self.description = data.get('description', self.description)
+        self.status = data.get('status', self.status)
+        self.user = data.get('user', self.user)
+
         try:
             db.session.commit()
         except Exception as e:
@@ -86,13 +85,13 @@ class bucket_list(db.Model):
                 # Generate a unique key using the bucketlist title and user
                 bucketlist_key = f"{title} - {user}"
                 # Check if a bucketlist with the same title and user exists
-                bucketlist = bucket_list.query.filter_by(title=title, user=user).first()
+                bucketlist = BucketList.query.filter_by(title=title, user=user).first()
                 if bucketlist:
                     # Update the existing bucketlist's data
                     bucketlist.update(**bucketlist_data)
                 else:
                     # Create a new bucketlist if not found
-                    bucketlist = bucket_list(**bucketlist_data)
+                    bucketlist = BucketList(**bucketlist_data)
                     bucketlist.create()
                 # Add the bucketlist to the restored_bucketlists dictionary
                 restored_bucketlists[bucketlist_key] = bucketlist
@@ -110,11 +109,11 @@ def initBucketlists():
         db.create_all()
         
         bucketlists = [
-            bucket_list(title='Skydiving', description='Experience freefall from an airplane.', status='Pending', user=1),
-            bucket_list(title='Visit the Eiffel Tower', description='Travel to Paris and see the Eiffel Tower.', status='Pending', user=2),
-            bucket_list(title='Learn a New Language', description='Master Spanish within a year.', status='In Progress', user=3),
-            bucket_list(title='Run a Marathon', description='Complete a 26.2-mile marathon.', status='Pending', user=4),
-            bucket_list(title='Publish a Book', description='Write and publish my first novel.', status='Completed', user=5),
+            BucketList(title='Skydiving', description='Experience freefall from an airplane.', status='Pending', user=1),
+            BucketList(title='Visit the Eiffel Tower', description='Travel to Paris and see the Eiffel Tower.', status='Pending', user=2),
+            BucketList(title='Learn a New Language', description='Master Spanish within a year.', status='In Progress', user=3),
+            BucketList(title='Run a Marathon', description='Complete a 26.2-mile marathon.', status='Pending', user=4),
+            BucketList(title='Publish a Book', description='Write and publish my first novel.', status='Completed', user=5),
         ]
         for bucketlist in bucketlists:
             try:
