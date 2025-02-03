@@ -30,6 +30,7 @@ from api.quotes import quotes_api
 from api.vote import vote_api
 from api.hobby import hobby_api
 from api.steps import steps_api
+from api.coolfacts import coolfacts_api
 
 # database Initialization functions
 from model.user import User, initUsers
@@ -37,11 +38,13 @@ from model.section import Section, initSections
 from model.group import Group, initGroups
 from model.channel import Channel, initChannels
 from model.post import Post, initPosts
+from model.bucket_list import BucketList, initBucketlists
+from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.steps import Steps, initSteps
-from model.nestPost import NestPost, initNestPosts
 from model.vote import Vote, initVotes
 from model.hobbies import Hobby, initHobbies
 from model.quotes import init_quotes, Quote
+from model.coolfacts import initCoolFacts, CoolFacts
 
 # register URIs for api endpoints
 app.register_blueprint(messages_api)
@@ -61,6 +64,7 @@ app.register_blueprint(mood_api)
 app.register_blueprint(quotes_api)
 app.register_blueprint(hobby_api)
 app.register_blueprint(steps_api)
+app.register_blueprint(coolfacts_api)
 
 login_manager.login_view = "login"
 
@@ -153,13 +157,15 @@ custom_cli = AppGroup('custom', help='Custom commands')
 
 @custom_cli.command('generate_data')
 def generate_data():
+    initBucketlists()
     initSteps()
     initHobbies()
+    initCoolFacts()
     init_quotes()
     initUsers()
     initSections()
     initGroups()
-    initChannels()
+    # initChannels()
     initPosts()
 
 def backup_database(db_uri, backup_uri):
@@ -182,6 +188,8 @@ def extract_data():
         data['hobbies'] = [hobby.read() for hobby in Hobby.query.all()]
         data['steps'] = [steps.read() for steps in Steps.query.all()]
         data['quotes'] = [quote.read() for quote in Quote.query.all()]
+        data['coolfacts'] = [coolfact.read() for coolfact in CoolFacts.query.all()]
+        data['bucketlists'] = [bucketlist.read() for bucketlist in BucketList.query.all()]
     return data
 
 def save_data_to_json(data, directory='backup'):
@@ -194,7 +202,7 @@ def save_data_to_json(data, directory='backup'):
 
 def load_data_from_json(directory='backup'):
     data = {}
-    for table in ['users', 'sections', 'groups', 'channels', 'posts', 'hobbies', 'steps', 'quotes']:
+    for table in ['users', 'sections', 'groups', 'channels', 'posts', 'hobbies', 'steps', 'quotes', 'coolfacts', 'bucketlists']:
         with open(os.path.join(directory, f'{table}.json'), 'r') as f:
             data[table] = json.load(f)
     return data
@@ -209,6 +217,8 @@ def restore_data(data):
         _ = Hobby.restore(data['hobbies'])
         _ = Steps.restore(data['steps'])
         _ = Quote.restore(data['quotes'])
+        _ = CoolFacts.restore(data['coolfacts'])
+        _ = BucketList.restore(data['bucketlists'])
     print("Data restored to the new database.")
 
 @custom_cli.command('backup_data')
