@@ -226,3 +226,14 @@ app.cli.add_command(custom_cli)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port="8887")
+    class Mood(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        mood_type = db.Column(db.String(50))
+        description = db.Column(db.String(200))
+
+        def read(self):
+            return {
+                'id': self.id,
+                'mood_type': self.mood_type,
+                'description': self.description
+            }

@@ -2,7 +2,7 @@ import jwt
 from flask import Blueprint, request, jsonify, current_app, Response, g
 from flask_restful import Api, Resource  # used for REST API building
 from datetime import datetime
-from __init__ import app
+from __init__ import app, db
 from api.jwt_authorize import token_required
 from model.mood import Mood
 
@@ -57,12 +57,16 @@ class MoodAPI:
             current_user = g.current_user
             try:
                 existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
-                if existing_mood:
-                    existing_mood.mood = None  # Erase mood column
-                    existing_mood.create()
-                    return jsonify({'message': 'Mood erased successfully'})
-                return jsonify({'message': 'No mood entry found'}), 404
+                print(existing_mood.mood)
+
+                existing_mood.mood = "neutral"
+                existing_mood.create()
+
+                print(existing_mood.read())
+
+                return jsonify({'message': 'Mood erased successfully'})
             except Exception as e:
+                # print(e)
                 return {'message': 'Failed to erase mood', 'error': str(e)}, 500
 
 # Register the API resources with the Blueprint
