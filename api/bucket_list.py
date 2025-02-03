@@ -28,25 +28,21 @@ class BucketListAPI:
         
 
         def post(self):
-            """
-            Create a new bucket list item.
-            """
-            current_user = g.current_user
-            if not current_user:
-                return jsonify({"message": "Unauthorized: User not found"}), 401
-            
+        
             data = request.get_json()
-            if not data or not data.get('title'):
-                return jsonify({"message": "Title is required"}), 400
-            
-            bucket_list_item = BucketList(
-                title=data['title'],
-                description=data.get('description', ''),
-                status=data.get('status', 'Pending'),
-                user=current_user.id
+
+            bucketlist = BucketList(
+                title=data.get('title'),
+                description=data.get('description'),
+                category=data.get('category'),
+                user=1,
             )
-            bucket_list_item.create()
-            return jsonify(bucket_list_item.read())
+
+            try:
+                bucketlist.create()
+                return jsonify(bucketlist.read())
+            except Exception as e:
+                return {'message': f'Error saving bucketlist: {e}'}, 500
 
         def put(self):
             """
@@ -65,7 +61,7 @@ class BucketListAPI:
                 bucket_list_item.update(
                     title=data.get('title'),
                     description=data.get('description'),
-                    status=data.get('status')
+                    category=data.get('category')
                 )
                 return jsonify(bucket_list_item.read())
             return jsonify({'message': 'Item not found or unauthorized'}), 404

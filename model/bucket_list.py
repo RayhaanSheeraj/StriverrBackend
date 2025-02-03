@@ -5,19 +5,19 @@ class BucketList(db.Model):
     __tablename__ = 'bucketlists'
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(255), nullable=True)
-    status = db.Column(db.String(50), nullable=False, default="Pending")
+    title = db.Column(db.String(3), nullable=False)
+    description = db.Column(db.String(3), nullable=True)
+    category = db.Column(db.String(3), nullable=False, default="Pending")
     user = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, title, description, status, user):
+    def __init__(self, title, description, category, user):
         self.title = title
         self.description = description
-        self.status = status
+        self.category = category
         self.user = user
 
     def __repr__(self):
-        return f"BucketList(id={self.id}, title={self.title}, description={self.description}, status={self.status}, user={self.user})"
+        return f"BucketList(id={self.id}, title={self.title}, description={self.description}, category={self.category}, user={self.user})"
 
     def create(self):
         """
@@ -39,7 +39,7 @@ class BucketList(db.Model):
             "id": self.id,
             "title": self.title,
             "description": self.description,
-            "status": self.status,
+            "category": self.category,
             "user": self.user
         }
 
@@ -49,7 +49,7 @@ class BucketList(db.Model):
         """
         self.title = data.get('title', self.title)
         self.description = data.get('description', self.description)
-        self.status = data.get('status', self.status)
+        self.category = data.get('category', self.category)
         self.user = data.get('user', self.user)
 
         try:
@@ -109,11 +109,11 @@ def initBucketlists():
         db.create_all()
         
         bucketlists = [
-            BucketList(title='Skydiving', description='Experience freefall from an airplane.', status='Pending', user=1),
-            BucketList(title='Visit the Eiffel Tower', description='Travel to Paris and see the Eiffel Tower.', status='Pending', user=2),
-            BucketList(title='Learn a New Language', description='Master Spanish within a year.', status='In Progress', user=3),
-            BucketList(title='Run a Marathon', description='Complete a 26.2-mile marathon.', status='Pending', user=4),
-            BucketList(title='Publish a Book', description='Write and publish my first novel.', status='Completed', user=5),
+            BucketList(title='Skydiving', description='Experience freefall from an airplane.', category='Adventure', user=1),
+            BucketList(title='Visit the Eiffel Tower', description='Travel to Paris and see the Eiffel Tower.', category='Travel', user=2),
+            BucketList(title='Learn a New Language', description='Master Spanish within a year.', category='Personal', user=3),
+            BucketList(title='Run a Marathon', description='Complete a 26.2-mile marathon.', category='Personal', user=4),
+            BucketList(title='Publish a Book', description='Write and publish my first novel.', category='Personal', user=5),
         ]
         for bucketlist in bucketlists:
             try:
