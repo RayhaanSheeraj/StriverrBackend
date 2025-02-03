@@ -38,7 +38,7 @@ from model.section import Section, initSections
 from model.group import Group, initGroups
 from model.channel import Channel, initChannels
 from model.post import Post, initPosts
-from model.bucket_list import bucket_list, initBucketlists
+from model.bucket_list import BucketList, initBucketlists
 from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.steps import Steps, initSteps
 from model.vote import Vote, initVotes
@@ -165,7 +165,7 @@ def generate_data():
     initUsers()
     initSections()
     initGroups()
-    initChannels()
+    # initChannels()
     initPosts()
 
 def backup_database(db_uri, backup_uri):
@@ -189,6 +189,7 @@ def extract_data():
         data['steps'] = [steps.read() for steps in Steps.query.all()]
         data['quotes'] = [quote.read() for quote in Quote.query.all()]
         data['coolfacts'] = [coolfact.read() for coolfact in CoolFacts.query.all()]
+        data['bucketlists'] = [bucketlist.read() for bucketlist in BucketList.query.all()]
     return data
 
 def save_data_to_json(data, directory='backup'):
@@ -201,7 +202,7 @@ def save_data_to_json(data, directory='backup'):
 
 def load_data_from_json(directory='backup'):
     data = {}
-    for table in ['users', 'sections', 'groups', 'channels', 'posts', 'hobbies', 'steps', 'quotes', 'coolfacts']:
+    for table in ['users', 'sections', 'groups', 'channels', 'posts', 'hobbies', 'steps', 'quotes', 'coolfacts', 'bucketlists']:
         with open(os.path.join(directory, f'{table}.json'), 'r') as f:
             data[table] = json.load(f)
     return data
@@ -217,6 +218,7 @@ def restore_data(data):
         _ = Steps.restore(data['steps'])
         _ = Quote.restore(data['quotes'])
         _ = CoolFacts.restore(data['coolfacts'])
+        _ = BucketList.restore(data['bucketlists'])
     print("Data restored to the new database.")
 
 @custom_cli.command('backup_data')
