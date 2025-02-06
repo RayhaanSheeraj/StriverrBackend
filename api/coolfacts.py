@@ -30,18 +30,37 @@ class CoolFactsAPI:
         
         @token_required()
         def put(self):
-            # Obtain the request data
-            data = request.get_json()
-            # Find the current post from the database table(s)
-            post = CoolFacts.query.get(data['id'])
-            # Update the post
-            post.age = data['age']
-            post.coolfacts = data['coolfacts']
-            # Save the post
-            post.update()
-            # Return response
-            return jsonify(post.read())
+            try:
+                # Obtain the request data
+                data = request.get_json()
         
+                # Check if 'id' is in the data
+                if 'id' not in data:
+                    return jsonify({"error": "ID is required"}), 400
+        
+                # Find the current post from the database table(s)
+                post = CoolFacts.query.get(data['id'])
+                if post is None:
+                    return {'message': 'Coolfact not found'}, 404
+                # Check if the post exists
+                
+                #if not post:
+                #    return jsonify({"error": "CoolFact not found"}), 404
+        
+                # Update the post
+                
+                post.age = data['age']
+                
+                post.coolfacts = data['coolfacts']
+        
+                # Save the post
+                post.update()
+        
+                # Return response
+                return jsonify(post.read())
+            except Exception as e:
+                # Return an error message in case of failure
+                return jsonify({"error": str(e)}), 500
         @token_required()
         def get(self):
             try:
