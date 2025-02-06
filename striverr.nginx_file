@@ -5,10 +5,6 @@ server {
     # Configure CORS Headers
     location / { 
         proxy_pass http://localhost:8503; # Change port to port on docker
-        # Simple requests
-        if ($request_method ~* "(GET|POST|PUT|DELETE)") { # Customize Request methods based on your needs
-                add_header "Access-Control-Allow-Origin"  *;
-        }
         # Preflighted requests 
         if ($request_method = OPTIONS ) {
                 add_header "Access-Control-Allow-Credentials" "true" always;
