@@ -1,4 +1,4 @@
-FROM docker.io/python:3.12
+FROM docker.io/python:3.10.12
 
 WORKDIR /
 
@@ -15,6 +15,6 @@ ENV GUNICORN_CMD_ARGS="--workers=3 --bind=0.0.0.0:8503"
 EXPOSE 8503
 
 # Define environment variable
-ENV FLASK_ENV=production
+ENV FLASK_ENV=deployed
 
 CMD [ "gunicorn", "main:app" ]
