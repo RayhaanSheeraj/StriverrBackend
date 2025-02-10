@@ -26,11 +26,11 @@ from api.messages_api import messages_api
 from api.student import student_api
 from api.bucket_list import bucket_list_api
 from api.mood import mood_api
+from api.quotes import quotes_api
 from api.vote import vote_api
 from api.hobby import hobby_api
 from api.steps import steps_api
 from api.coolfacts import coolfacts_api
-from api.quotes import quotes_api
 
 # database Initialization functions
 from model.user import User, initUsers
