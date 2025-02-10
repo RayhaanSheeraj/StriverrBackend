@@ -6,6 +6,8 @@ from api.jwt_authorize import token_required
 # Blueprint for the API
 coolfacts_api = Blueprint('coolfacts_api', __name__, url_prefix='/api')
 api = Api(coolfacts_api)  # Attach Flask-RESTful API to the Blueprint
+
+
 class CoolFactsAPI:
     """
     Define the API CRUD endpoints for the Post model.
