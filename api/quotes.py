@@ -13,12 +13,15 @@ class quoteResource:
     class _CRUD(Resource):
         @token_required
         def get(self):
-            category = request.args.get('category', 'general')
-            quotes = Quote.query.filter_by(category=category).all()
-            if quotes:
-                return jsonify({"category": category, "quotes": [quote.name for quote in quotes]})
-            else:
-                return jsonify({"message": "Category not found"}), 404
+            try:
+                category = request.args.get('category', 'general')
+                quotes = Quote.query.filter_by(category=category).all()
+                if quotes:
+                    return jsonify({"category": category, "quotes": [quote.name for quote in quotes]})
+                else:
+                    return jsonify({"message": "Category not found"}), 404
+            except Exception as e:
+                return jsonify({"message": "Internal server error", "error": str(e)}), 500
         @token_required
         def post(self):
             data = request.get_json()
