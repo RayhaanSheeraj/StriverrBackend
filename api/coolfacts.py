@@ -32,37 +32,29 @@ class CoolFactsAPI:
         
         @token_required()
         def put(self):
-            try:
-                # Obtain the request data
-                data = request.get_json()
-        
-                # Check if 'id' is in the data
-                if 'id' not in data:
-                    return jsonify({"error": "ID is required"}), 400
-        
-                # Find the current post from the database table(s)
-                post = CoolFacts.query.get(data['id'])
-                if post is None:
-                    return {'message': 'Coolfact not found'}, 404
-                # Check if the post exists
-                
-                #if not post:
-                #    return jsonify({"error": "CoolFact not found"}), 404
-        
-                # Update the post
-                
-                post.age = data['age']
-                
-                post.coolfacts = data['coolfacts']
-        
-                # Save the post
-                post.update()
-        
-                # Return response
-                return jsonify(post.read())
-            except Exception as e:
-                # Return an error message in case of failure
-                return jsonify({"error": str(e)}), 500
+            data = request.get_json()
+            if not data or not data.get("age") or not data.get("coolfacts"):
+                return jsonify({"message": "Coolfact and age are required to update"}), 400
+            print(data["coolfacts"])
+            print(data["age"])
+            coolfact = CoolFacts.query.filter_by(coolfacts=data["coolfacts"], age=data["age"]).first()
+            if not coolfact:
+                return jsonify({"message": "Coolfact and age not found"}), 404
+
+            # Update the object's attributes
+            coolfact.coolfacts = data["new_coolfacts"]
+            coolfact.age = data["new_age"]
+            if coolfact.update():
+                #return "hello"
+                return jsonify({"message": "Coolfact and age updated", "old_coolfact": data["coolfacts"], "new_coolfact": coolfact.coolfacts, "old_age": data["age"], "new_age": coolfact.age})
+           # coolfact.update({"coolfacts": data["coolfacts"], "age": data["age"]})
+           # return jsonify({"message": "Coolfact and age updated"})
+            # Commit changes using update()
+            #if coolfact.update():
+            #    return jsonify({"message": "Coolfact and age updated", "new_coolfact": coolfact.coolfacts, "new_age": coolfact.age})
+            #else:
+            #    return jsonify({"message": "Error updating coolfact and age"}), 500
+
         @token_required()
         def get(self):
             try:

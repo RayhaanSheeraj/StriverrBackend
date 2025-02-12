@@ -157,10 +157,10 @@ custom_cli = AppGroup('custom', help='Custom commands')
 
 @custom_cli.command('generate_data')
 def generate_data():
+    initCoolFacts()
     initBucketlists()
     initSteps()
     initHobbies()
-    initCoolFacts()
     init_quotes()
     initUsers()
     initSections()
@@ -210,6 +210,7 @@ def load_data_from_json(directory='backup'):
 def restore_data(data):
     with app.app_context():
         users = User.restore(data['users'])
+        _ = CoolFacts.restore(data['coolfacts'])
         _ = Section.restore(data['sections'])
         _ = Group.restore(data['groups'], users)
         _ = Channel.restore(data['channels'])
@@ -217,7 +218,6 @@ def restore_data(data):
         _ = Hobby.restore(data['hobbies'])
         _ = Steps.restore(data['steps'])
         _ = Quote.restore(data['quotes'])
-        _ = CoolFacts.restore(data['coolfacts'])
         _ = BucketList.restore(data['bucketlists'])
     print("Data restored to the new database.")
 

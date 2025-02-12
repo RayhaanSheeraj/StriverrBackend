@@ -1,6 +1,7 @@
 from sqlite3 import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from __init__ import app, db
+import logging
 # coolfacts DATABASE
 class CoolFacts (db.Model):
     """
@@ -40,44 +41,59 @@ class CoolFacts (db.Model):
             "coolfacts": self.coolfacts,
             "age": self.age,
         }
-    def update(self, data):
-        """
-        Updates the quiz with new data and commits the changes.
-        """
-        for key, value in data.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+    def update(self):
         try:
+            db.session.add(self)
             db.session.commit()
-        except SQLAlchemyError as e:
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error creating hobby: {e}")
             db.session.rollback()
-            raise e
-    def delete(self):
+            return False
+    def delete(self, data):
         """
         Deletes the quiz from the database and commits the transaction.
         """
         try:
-            db.session.delete(self)
+            for key, value in data.items():
+                setattr(self, key, value)
+            #db.session.delete(self)
+            
             db.session.commit()
-        except SQLAlchemyError as e:
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error updating coolfact: {e}")
             db.session.rollback()
-            raise e
+            return False
     @staticmethod
     def restore(data):
-        with app.app_context():
-            db.session.query(CoolFacts).delete()
-            db.session.commit()
+        """
+        Restore the database with the data provided.
+        """
+        for event_data in data:
+            _ = event_data.pop('id', None)  # removes id
+            event = CoolFacts.query.filter_by(coolfacts=event_data['coolfacts']).first()  # retrieves the event by coolfacts
+            if event:
+                event.update(event_data)
+            else:
+                event = CoolFacts(**event_data)
+                event.create()
+    #@staticmethod
+    #def restore(data):
+    #    with app.app_context():
+    #        db.session.query(CoolFacts).delete()
+    #        db.session.commit()
 
-            restored_facts = {}
-            for fact_data in data:
-                fact = CoolFacts(
-                    coolfacts=fact_data['coolfacts'],
-                    age=fact_data['age']
-                )
-                fact.create()
-                restored_facts[fact_data['id']] = fact
+    #        restored_facts = {}
+    #        for fact_data in data:
+    #            fact = CoolFacts(
+    #                coolfacts=fact_data['coolfacts'],
+    #                age=fact_data['age']
+    #            )
+    #            fact.create()
+    #            restored_facts[fact_data['id']] = fact
 
-            return restored_facts
+    #        return restored_facts
 def initCoolFacts():
     """
     Initializes the QuizCreation table and inserts test data for development purposes.
