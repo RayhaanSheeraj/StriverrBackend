@@ -19,6 +19,21 @@ class MoodAPI:
         """
 
         @token_required()
+        def delete(self):
+            current_user = g.current_user
+            
+            try:
+                # Check if the user already has an existing mood entry
+                existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
+               
+                db.session.delete(existing_mood)
+                db.session.commit()
+                return jsonify({'message': 'Mood deleted successfully'})
+                
+            except Exception as e:
+                return {'message': 'Failed to process mood', 'error': str(e)}, 500
+
+        @token_required()
         def post(self):
             """
             Add or update a mood entry for the authenticated user.
