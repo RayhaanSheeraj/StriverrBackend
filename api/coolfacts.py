@@ -35,8 +35,6 @@ class CoolFactsAPI:
             data = request.get_json()
             if not data or not data.get("age") or not data.get("coolfacts"):
                 return jsonify({"message": "Coolfact and age are required to update"}), 400
-            print(data["coolfacts"])
-            print(data["age"])
             coolfact = CoolFacts.query.filter_by(coolfacts=data["coolfacts"], age=data["age"]).first()
             if not coolfact:
                 return jsonify({"message": "Coolfact and age not found"}), 404

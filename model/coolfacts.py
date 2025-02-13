@@ -50,19 +50,16 @@ class CoolFacts (db.Model):
             logging.error(f"Error creating hobby: {e}")
             db.session.rollback()
             return False
-    def delete(self, data):
+    def delete(self):
         """
         Deletes the quiz from the database and commits the transaction.
         """
         try:
-            for key, value in data.items():
-                setattr(self, key, value)
-            #db.session.delete(self)
-            
+            db.session.delete(self)
             db.session.commit()
             return True
         except IntegrityError as e:
-            logging.error(f"Error updating coolfact: {e}")
+            logging.error(f"Error deleting hobby: {e}")
             db.session.rollback()
             return False
     @staticmethod
