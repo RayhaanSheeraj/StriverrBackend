@@ -62,35 +62,35 @@ class CoolFacts (db.Model):
             logging.error(f"Error deleting hobby: {e}")
             db.session.rollback()
             return False
+   # @staticmethod
+   # def restore(data):
+   #     """
+   #     Restore the database with the data provided.
+   #     """
+   #     for fact in data:
+   #         _ = fact.pop('id', None)  # removes id
+   #         event = CoolFacts.query.filter_by(coolfacts=fact['coolfacts'], age=fact['age']).first()  # retrieves the event by coolfacts
+   #         if event:
+   #             event.update(fact)
+   #         else:
+   #             event = CoolFacts(**fact)
+   #             event.create()
     @staticmethod
     def restore(data):
-        """
-        Restore the database with the data provided.
-        """
-        for event_data in data:
-            _ = event_data.pop('id', None)  # removes id
-            event = CoolFacts.query.filter_by(coolfacts=event_data['coolfacts']).first()  # retrieves the event by coolfacts
-            if event:
-                event.update(event_data)
-            else:
-                event = CoolFacts(**event_data)
-                event.create()
-    #@staticmethod
-    #def restore(data):
-    #    with app.app_context():
-    #        db.session.query(CoolFacts).delete()
-    #        db.session.commit()
+        with app.app_context():
+            db.session.query(CoolFacts).delete()
+            db.session.commit()
 
-    #        restored_facts = {}
-    #        for fact_data in data:
-    #            fact = CoolFacts(
-    #                coolfacts=fact_data['coolfacts'],
-    #                age=fact_data['age']
-    #            )
-    #            fact.create()
-    #            restored_facts[fact_data['id']] = fact
+            restored_facts = {}
+            for fact_data in data:
+                fact = CoolFacts(
+                    coolfacts=fact_data['coolfacts'],
+                    age=fact_data['age']
+                )
+                fact.create()
+                restored_facts[fact_data['id']] = fact
 
-    #        return restored_facts
+            return restored_facts
 def initCoolFacts():
     """
     Initializes the QuizCreation table and inserts test data for development purposes.

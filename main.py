@@ -207,7 +207,7 @@ def restore_data(data):
         _ = Section.restore(data['sections'])
         _ = Group.restore(data['groups'], users)
         _ = Channel.restore(data['channels'])
-        _ = Post.restore(data['posts'])
+#        _ = Post.restore(data['posts'])
         _ = Hobby.restore(data['hobbies'])
         _ = Steps.restore(data['steps'])
         _ = Quote.restore(data['quotes'])
@@ -219,6 +219,7 @@ def backup_data():
     data = extract_data()
     save_data_to_json(data)
     backup_database(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_BACKUP_URI'])
+
 
 @custom_cli.command('restore_data')
 def restore_data_command():

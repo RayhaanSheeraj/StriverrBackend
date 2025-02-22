@@ -22,7 +22,9 @@ from main import app, restore_data_command
 
 def main():
     # Step 3: Restore the database
+    
     with app.app_context():
+
         restore_data_command()
 
 if __name__ == "__main__":
