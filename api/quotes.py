@@ -9,9 +9,6 @@ from model.quotes import Quote
 quotes_api = Blueprint('quote_api', __name__, url_prefix='/api')
 api = Api(quotes_api)
 
-quote_api = Blueprint('quote_api', __name__, url_prefix='/api')
-api = Api(quote_api)
-
 class QuoteResource(Resource):
     def get(self):
         category = request.args.get('category', 'general')
