@@ -99,9 +99,9 @@ def initCoolFacts():
         db.create_all()  # Create the database and tables
         # Sample test data
         quizzes = [
-            CoolFacts(coolfacts="I was born in 2009", age="16"),
-            CoolFacts(coolfacts="Nikith was born in 2008", age="24"),
-            CoolFacts(coolfacts="I am not entirely sure what to put here", age="32")
+            CoolFacts(coolfacts="Elon Musk saved Tesla from bankruptcy", age="37"),
+            CoolFacts(coolfacts="Messi moved to Barcelona, Spain to play soccer and recieve proper medical treatment", age="13"),
+            CoolFacts(coolfacts="Lebron James was scouted by the Cleveland Cavaliers and played his first NBA game there", age="18")
         ]
         for quiz in quizzes:
             try:
