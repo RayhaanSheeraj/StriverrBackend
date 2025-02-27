@@ -19,13 +19,29 @@ class MoodAPI:
         """
 
         @token_required()
+        def get(self):
+            """
+            Get the current user's mood entry.
+            """
+            current_user = g.current_user
+
+            try:
+                mood_entry = Mood.query.filter_by(user_id=current_user.id).first()
+                if mood_entry:
+                    return jsonify({'message': 'Mood retrieved successfully', 'mood': mood_entry.read()})
+                else:
+                    return {'message': 'No mood entry found for the user'}, 404
+            except Exception as e:
+                return {'message': 'Failed to retrieve mood', 'error': str(e)}, 500
+
+        @token_required()
         def delete(self):
             current_user = g.current_user
             
             try:
                 # Check if the user already has an existing mood entry
                 existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
-               
+                
                 db.session.delete(existing_mood)
                 db.session.commit()
                 return jsonify({'message': 'Mood deleted successfully'})
@@ -72,16 +88,14 @@ class MoodAPI:
             current_user = g.current_user
             try:
                 existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
-                print(existing_mood.mood)
-
-                existing_mood.mood = "neutral"
-                existing_mood.create()
-
-                print(existing_mood.read())
-
-                return jsonify({'message': 'Mood erased successfully'})
+                
+                if existing_mood:
+                    existing_mood.mood = "neutral"
+                    existing_mood.create()
+                    return jsonify({'message': 'Mood erased successfully'})
+                else:
+                    return {'message': 'No mood entry found to erase'}, 404
             except Exception as e:
-                # print(e)
                 return {'message': 'Failed to erase mood', 'error': str(e)}, 500
 
 # Register the API resources with the Blueprint
