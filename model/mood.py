@@ -28,7 +28,7 @@ class Mood(db.Model):
             'user_id': self.user_id,
         }
 
-    def clear(self):
+    def delete(self):
         """
         Clears the mood entry by deleting the row from the database.
         """

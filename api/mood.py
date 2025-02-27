@@ -34,7 +34,7 @@ class MoodAPI:
                 return {'message': 'Failed to process mood', 'error': str(e)}, 500
 
         @token_required()
-        def post(self):
+        def put(self):
             """
             Add or update a mood entry for the authenticated user.
             """
