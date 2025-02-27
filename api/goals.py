@@ -2,6 +2,7 @@ import logging  # Add this import
 from flask import Blueprint, request, jsonify, current_app, Response, g
 from flask_restful import Api, Resource  # Used for REST API building
 from __init__ import app, db  # Ensure __init__.py initializes your Flask app
+from api.jwt_authorize import token_required
 from model.goals import StriverGoals
 # Blueprint for the API
 goals_api = Blueprint('goals_api', __name__, url_prefix='/api')
@@ -18,6 +19,7 @@ class GoalsAPI:
     - delete: delete a post
     """
     class _CRUD(Resource):
+        @token_required()
         def get(self):
             # Obtain the current user
             # current_user = g.current_user
@@ -27,13 +29,13 @@ class GoalsAPI:
             json_ready = [post.read() for post in posts]
             # Return a JSON list, converting Python dictionaries to JSON format
             return jsonify(json_ready)
-        
+        @token_required()
         def post(self):
             data = request.get_json()
             post = StriverGoals(getgoals=data['getgoals'], goaloutput=data['goaloutput'], progress=data.get('progress'))
             post.create()
             return jsonify(post.read())
-        
+        @token_required()
         def put(self):
             data = request.get_json()
             post = StriverGoals.query.get(data['id'])
@@ -46,7 +48,7 @@ class GoalsAPI:
                     logging.error(f"Error updating post: {e}")
                     return jsonify({"error": "An error occurred while updating the post"}), 500
             return jsonify({"message": "Post not found"}), 404
-        
+        @token_required()
         def get(self):
             try:
                 # Query all entries in the BinaryHistory table
@@ -58,7 +60,7 @@ class GoalsAPI:
             except Exception as e:
                 # Return an error message in case of failure
                 return jsonify({"error": str(e)}), 500
-        
+        @token_required()
         def delete(self):
             data = request.get_json()
             post = StriverGoals.query.get(data['id'])

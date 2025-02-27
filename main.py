@@ -187,6 +187,7 @@ def extract_data():
         data['quotes'] = [quote.read() for quote in Quote.query.all()]
         data['coolfacts'] = [coolfact.read() for coolfact in CoolFacts.query.all()]
         data['bucketlists'] = [bucketlist.read() for bucketlist in BucketList.query.all()]
+        data['strivergoals'] = [strivergoal.read() for strivergoal in StriverGoals.query.all()]
     return data
 
 def save_data_to_json(data, directory='backup'):
