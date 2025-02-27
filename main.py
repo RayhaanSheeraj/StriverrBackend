@@ -31,6 +31,7 @@ from api.vote import vote_api
 from api.hobby import hobby_api
 from api.steps import steps_api
 from api.coolfacts import coolfacts_api
+from api.goals import goals_api
 
 # database Initialization functions
 from model.user import User, initUsers
@@ -45,6 +46,7 @@ from model.vote import Vote, initVotes
 from model.hobbies import Hobby, initHobbies
 from model.quotes import init_quotes, Quote
 from model.coolfacts import initCoolFacts, CoolFacts
+from model.goals import initGoals, StriverGoals
 
 # register URIs for api endpoints
 app.register_blueprint(messages_api)
@@ -65,6 +67,7 @@ app.register_blueprint(quotes_api)
 app.register_blueprint(hobby_api)
 app.register_blueprint(steps_api)
 app.register_blueprint(coolfacts_api)
+app.register_blueprint(goals_api)
 
 login_manager.login_view = "login"
 
@@ -157,6 +160,7 @@ custom_cli = AppGroup('custom', help='Custom commands')
 
 @custom_cli.command('generate_data')
 def generate_data():
+    initGoals()
     initBucketlists()
     initSteps()
     initHobbies()
@@ -219,6 +223,7 @@ def restore_data(data):
         _ = Quote.restore(data['quotes'])
         _ = CoolFacts.restore(data['coolfacts'])
         _ = BucketList.restore(data['bucketlists'])
+        _ = StriverGoals.restore(data['strivergoals'])
     print("Data restored to the new database.")
 
 @custom_cli.command('backup_data')
