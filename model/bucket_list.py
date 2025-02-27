@@ -29,7 +29,7 @@ class BucketList(db.Model):
         try:
             db.session.add(self)
             db.session.commit()
-        except Exception as e:
+        except SQLAlchemyError as e:
             db.session.rollback()
             raise e
         return self
