@@ -1,6 +1,7 @@
 from sqlite3 import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError
 from __init__ import app, db
+import logging
 # coolfacts DATABASE
 class CoolFacts (db.Model):
     """
@@ -40,18 +41,15 @@ class CoolFacts (db.Model):
             "coolfacts": self.coolfacts,
             "age": self.age,
         }
-    def update(self, data):
-        """
-        Updates the quiz with new data and commits the changes.
-        """
-        for key, value in data.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+    def update(self):
         try:
+            db.session.add(self)
             db.session.commit()
-        except SQLAlchemyError as e:
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error creating hobby: {e}")
             db.session.rollback()
-            raise e
+            return False
     def delete(self):
         """
         Deletes the quiz from the database and commits the transaction.
@@ -59,9 +57,24 @@ class CoolFacts (db.Model):
         try:
             db.session.delete(self)
             db.session.commit()
-        except SQLAlchemyError as e:
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error deleting hobby: {e}")
             db.session.rollback()
-            raise e
+            return False
+   # @staticmethod
+   # def restore(data):
+   #     """
+   #     Restore the database with the data provided.
+   #     """
+   #     for fact in data:
+   #         _ = fact.pop('id', None)  # removes id
+   #         event = CoolFacts.query.filter_by(coolfacts=fact['coolfacts'], age=fact['age']).first()  # retrieves the event by coolfacts
+   #         if event:
+   #             event.update(fact)
+   #         else:
+   #             event = CoolFacts(**fact)
+   #             event.create()
     @staticmethod
     def restore(data):
         with app.app_context():
@@ -86,9 +99,9 @@ def initCoolFacts():
         db.create_all()  # Create the database and tables
         # Sample test data
         quizzes = [
-            CoolFacts(coolfacts="I was born in 2009", age="16"),
-            CoolFacts(coolfacts="Nikith was born in 2008", age="24"),
-            CoolFacts(coolfacts="I am not entirely sure what to put here", age="32")
+            CoolFacts(coolfacts="Elon Musk saved Tesla from bankruptcy", age="37"),
+            CoolFacts(coolfacts="Messi moved to Barcelona, Spain to play soccer and recieve proper medical treatment", age="13"),
+            CoolFacts(coolfacts="Lebron James was scouted by the Cleveland Cavaliers and played his first NBA game there", age="18")
         ]
         for quiz in quizzes:
             try:

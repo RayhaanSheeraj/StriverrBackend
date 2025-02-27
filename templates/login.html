@@ -5,38 +5,35 @@
     <!-- Start of body content specific to page -->
     <div class="px-5 py-5 mx-auto">
         <div class="container py-4">
-            <header class="pb-3 mb-4 border-bottom border-primary text-light">
+            <header class="pb-3 mb-4 border-bottom border-primary" style="color: cyan;">
                 <span class="fs-4">Login Page</span>
             </header>
         </div>
     
-        <div class="container py-4 text-light bg-primary">
-    
-            <div class="container bg-secondary py-4">
-                <div class="p-5 mb-4 bg-light text-dark rounded-3">
-                    <form name="f" action="{{ url_for('login') }}" method="POST">
-                        <table>
-                            {% if error %}
-                                <tr class="alert alert-error">
-                                    Invalid username and password.
-                                </tr>
-                            {% endif %}
-                            {% if logout %}
-                                <tr class="alert alert-success">
-                                    You have been logged out.
-                                </tr>
-                            {% endif %}
-                            <tr><th><label for="username">User ID</label></th></tr>
-                            <tr><td><input id='username' name="username" size="20" required></td></tr>
-                            <tr><th><label for="password">Password</label></th></tr>
-                            <tr><td><input type="password" id="password" name="password" size="20" required></td></tr>
-                            <!-- Hidden input for 'next' page, which is set on unauthorized redirects -->
-                            <input type="hidden" name="next" value="{{ next }}">
-                            <tr><th><input type="submit" value="Submit"></th></tr>
-                        </table>
-                    </form>
-                </div>
-
+        <div class="container py-4" style="color: cyan;">
+            <div class="p-5 mb-4" style="background-color: #3d2b80; color: #343a40; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 75%; margin: auto;">
+                <form name="f" action="{{ url_for('login') }}" method="POST">
+                    <table style="width: 100%;">
+                        {% if error %}
+                            <tr class="alert alert-error" style="color: cyan;">
+                                Invalid username and password.
+                            </tr>
+                        {% endif %}
+                        {% if logout %}
+                            <tr class="alert alert-success" style="color: cyan;">
+                                You have been logged out.
+                            </tr>
+                        {% endif %}
+                        <tr><th><label for="username" style="color: cyan;">User ID</label></th></tr>
+                        <tr><td><input id='username' name="username" size="20" required style="width: 100%;"></td></tr>
+                        <tr><th><label for="password" style="color: cyan;">Password</label></th></tr>
+                        <tr><td><input type="password" id="password" name="password" size="20" required style="width: 100%;"></td></tr>
+                        <!-- Hidden input for 'next' page, which is set on unauthorized redirects -->
+                        <input type="hidden" name="next" value="{{ next }}">
+                        <tr><th><input type="submit" value="Submit" style="background-color: cyan; color: black; width: 100%;"></th></tr>
+                    </table>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

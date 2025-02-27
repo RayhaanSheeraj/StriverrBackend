@@ -15,14 +15,11 @@ from __init__ import app, db, login_manager
 # API endpoints
 from api.user import user_api
 from api.pfp import pfp_api
-from api.nestImg import nestImg_api
 from api.achievements import post_api
 from api.challenges import challenges_api
 from api.channel import channel_api
 from api.group import group_api
 from api.section import section_api
-from api.nestPost import nestPost_api
-from api.messages_api import messages_api
 from api.student import student_api
 from api.bucket_list import bucket_list_api
 from api.mood import mood_api
@@ -40,7 +37,6 @@ from model.group import Group, initGroups
 from model.channel import Channel, initChannels
 from model.post import Post, initPosts
 from model.bucket_list import BucketList, initBucketlists
-from model.nestPost import NestPost, initNestPosts # Justin added this, custom format for his website
 from model.steps import Steps, initSteps
 from model.vote import Vote, initVotes
 from model.hobbies import Hobby, initHobbies
@@ -49,7 +45,6 @@ from model.coolfacts import initCoolFacts, CoolFacts
 from model.goals import initGoals, StriverGoals
 
 # register URIs for api endpoints
-app.register_blueprint(messages_api)
 app.register_blueprint(user_api)
 app.register_blueprint(pfp_api)
 app.register_blueprint(post_api)
@@ -57,8 +52,6 @@ app.register_blueprint(challenges_api)
 app.register_blueprint(channel_api)
 app.register_blueprint(group_api)
 app.register_blueprint(section_api)
-app.register_blueprint(nestPost_api)
-app.register_blueprint(nestImg_api)
 app.register_blueprint(vote_api)
 app.register_blueprint(student_api)
 app.register_blueprint(bucket_list_api)
@@ -161,10 +154,10 @@ custom_cli = AppGroup('custom', help='Custom commands')
 @custom_cli.command('generate_data')
 def generate_data():
     initGoals()
+    initCoolFacts()
     initBucketlists()
     initSteps()
     initHobbies()
-    initCoolFacts()
     init_quotes()
     initUsers()
     initSections()
@@ -214,14 +207,14 @@ def load_data_from_json(directory='backup'):
 def restore_data(data):
     with app.app_context():
         users = User.restore(data['users'])
+        _ = CoolFacts.restore(data['coolfacts'])
         _ = Section.restore(data['sections'])
         _ = Group.restore(data['groups'], users)
         _ = Channel.restore(data['channels'])
-        _ = Post.restore(data['posts'])
+#        _ = Post.restore(data['posts'])
         _ = Hobby.restore(data['hobbies'])
         _ = Steps.restore(data['steps'])
         _ = Quote.restore(data['quotes'])
-        _ = CoolFacts.restore(data['coolfacts'])
         _ = BucketList.restore(data['bucketlists'])
         _ = StriverGoals.restore(data['strivergoals'])
     print("Data restored to the new database.")
@@ -231,6 +224,7 @@ def backup_data():
     data = extract_data()
     save_data_to_json(data)
     backup_database(app.config['SQLALCHEMY_DATABASE_URI'], app.config['SQLALCHEMY_BACKUP_URI'])
+
 
 @custom_cli.command('restore_data')
 def restore_data_command():

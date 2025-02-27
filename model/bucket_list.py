@@ -1,5 +1,8 @@
 
 from __init__ import db, app
+from sqlite3 import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
+import logging
 
 class BucketList(db.Model):
     __tablename__ = 'bucketlists'
@@ -43,20 +46,15 @@ class BucketList(db.Model):
             "user": self.user
         }
 
-    def update(self, data):
-        """
-        Update the bucket list item with new data.
-        """
-        self.title = data.get('title', self.title)
-        self.description = data.get('description', self.description)
-        self.category = data.get('category', self.category)
-        self.user = data.get('user', self.user)
-
+    def update(self):
         try:
+            db.session.add(self)
             db.session.commit()
-        except Exception as e:
+            return True
+        except IntegrityError as e:
+            logging.error(f"Error creating hobby: {e}")
             db.session.rollback()
-            raise e
+            return False
 
     def delete(self):
         """
