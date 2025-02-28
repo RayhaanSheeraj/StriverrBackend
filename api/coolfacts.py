@@ -9,16 +9,10 @@ api = Api(coolfacts_api)  # Attach Flask-RESTful API to the Blueprint
 
 
 class CoolFactsAPI:
-    """
-    Define the API CRUD endpoints for the Post model.
-    There are four operations that correspond to common HTTP methods:
-    - post: create a new post
-    - get: read posts
-    - put: update a post
-    - delete: delete a post
-    """
+
+
     class _CRUD(Resource):
-        
+
         @token_required()
         def post(self):
             # Obtain the request data sent by the RESTful client API
@@ -76,11 +70,7 @@ class CoolFactsAPI:
             post.delete()
             # Return response
             return jsonify({"message": "Post deleted"})
-    """
-    Map the _CRUD class to the API endpoints for /post.
-    - The API resource class inherits from flask_restful.Resource.
-    - The _CRUD class defines the HTTP methods for the API.
-    """
+   
     api.add_resource(_CRUD, '/coolfacts')
 if __name__ == '__main__':
     app.run(debug=True)
