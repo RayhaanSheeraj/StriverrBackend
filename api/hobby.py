@@ -17,7 +17,7 @@ class HobbyResource(Resource):
             return jsonify({"category": category, "hobbies": [hobby.name for hobby in hobbies]})
         else:
             return jsonify({"message": "Category not found"}), 404
-    
+    # ChatGPT helped me figure out the post and put functions for this API
     def post(self):
         data = request.get_json()
         if not data or not data.get('name') or not data.get('category'):

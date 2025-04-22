@@ -35,7 +35,7 @@ class Hobby(db.Model):
             logging.error(f"Error creating hobby: {e}")
             db.session.rollback()
             return False
-
+# ChatGPT helped me figure out the update and delete functions for this class
     def update(self):
         """
         Update an existing hobby in the database.
@@ -79,7 +79,7 @@ class Hobby(db.Model):
             "name": self.name,
             "category": self.category
         }
-
+# ChatGPT helped me figure out the restore function for this class
     @staticmethod
     def restore(data):
         """
