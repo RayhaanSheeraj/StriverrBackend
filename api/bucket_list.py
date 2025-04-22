@@ -6,7 +6,6 @@ from api.jwt_authorize import token_required
 from model.bucket_list import BucketList
 
 bucket_list_api = Blueprint('bucket_list_api', __name__, url_prefix='/api')
-CORS(bucket_list_api)
 api = Api(bucket_list_api)
 
 class BucketListAPI:
@@ -75,5 +74,3 @@ class BucketListAPI:
             return jsonify({"message": "Post deleted"})
            
     api.add_resource(_CRUD, '/bucketlist')
-if __name__ == '__main__':
-    app.run(debug=True)

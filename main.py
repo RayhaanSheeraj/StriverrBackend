@@ -28,6 +28,7 @@ from api.vote import vote_api
 from api.hobby import hobby_api
 from api.steps import steps_api
 from api.coolfacts import coolfacts_api
+from api.goals import goals_api
 
 # database Initialization functions
 from model.user import User, initUsers
@@ -41,6 +42,7 @@ from model.vote import Vote, initVotes
 from model.hobbies import Hobby, initHobbies
 from model.quotes import init_quotes, Quote
 from model.coolfacts import initCoolFacts, CoolFacts
+from model.goals import initGoals, StriverGoals
 
 # register URIs for api endpoints
 app.register_blueprint(user_api)
@@ -58,6 +60,7 @@ app.register_blueprint(quotes_api)
 app.register_blueprint(hobby_api)
 app.register_blueprint(steps_api)
 app.register_blueprint(coolfacts_api)
+app.register_blueprint(goals_api)
 
 login_manager.login_view = "login"
 
@@ -150,6 +153,7 @@ custom_cli = AppGroup('custom', help='Custom commands')
 
 @custom_cli.command('generate_data')
 def generate_data():
+    initGoals()
     initCoolFacts()
     initBucketlists()
     initSteps()
@@ -183,6 +187,7 @@ def extract_data():
         data['quotes'] = [quote.read() for quote in Quote.query.all()]
         data['coolfacts'] = [coolfact.read() for coolfact in CoolFacts.query.all()]
         data['bucketlists'] = [bucketlist.read() for bucketlist in BucketList.query.all()]
+        data['strivergoals'] = [strivergoal.read() for strivergoal in StriverGoals.query.all()]
     return data
 
 def save_data_to_json(data, directory='backup'):
@@ -212,6 +217,7 @@ def restore_data(data):
         _ = Steps.restore(data['steps'])
         _ = Quote.restore(data['quotes'])
         _ = BucketList.restore(data['bucketlists'])
+        _ = StriverGoals.restore(data['strivergoals'])
     print("Data restored to the new database.")
 
 @custom_cli.command('backup_data')

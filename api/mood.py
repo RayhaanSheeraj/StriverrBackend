@@ -19,24 +19,52 @@ class MoodAPI:
         """
 
         @token_required()
-        def delete(self):
+        def get(self):
+            """
+            Get the current user's mood entry.
+            """
             current_user = g.current_user
-            
+
             try:
-                # Check if the user already has an existing mood entry
-                existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
-               
-                db.session.delete(existing_mood)
-                db.session.commit()
-                return jsonify({'message': 'Mood deleted successfully'})
-                
+                mood_entry = Mood.query.filter_by(user_id=current_user.id).first()
+                if mood_entry:
+                    return jsonify({'message': 'Mood retrieved successfully', 'mood': mood_entry.read()})
+                else:
+                    return {'message': 'No mood entry found for the user'}, 404
             except Exception as e:
-                return {'message': 'Failed to process mood', 'error': str(e)}, 500
+                return {'message': 'Failed to retrieve mood', 'error': str(e)}, 500
 
         @token_required()
         def post(self):
             """
-            Add or update a mood entry for the authenticated user.
+            Create a new mood entry for the authenticated user.
+            """
+            current_user = g.current_user
+            body = request.get_json()
+
+            # Validate mood
+            mood = body.get('mood')
+            if mood is None or not isinstance(mood, str) or mood.strip() == "":
+                return {'message': 'Invalid mood provided'}, 400
+
+            try:
+                # Check if the user already has an existing mood entry
+                existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
+
+                if existing_mood:
+                    return {'message': 'Mood entry already exists. Use PUT to update.'}, 400
+                else:
+                    # Create a new mood entry
+                    new_mood = Mood(mood=mood, user_id=current_user.id)
+                    new_mood.create()
+                    return jsonify({'message': 'Mood created successfully', 'mood': new_mood.read()})
+            except Exception as e:
+                return {'message': 'Failed to create mood', 'error': str(e)}, 500
+
+        @token_required()
+        def put(self):
+            """
+            Update an existing mood entry for the authenticated user.
             """
             current_user = g.current_user
             body = request.get_json()
@@ -56,10 +84,25 @@ class MoodAPI:
                     existing_mood.create()  # Save changes to the database
                     return jsonify({'message': 'Mood updated successfully', 'mood': existing_mood.read()})
                 else:
-                    # Create a new mood entry
-                    new_mood = Mood(mood=mood, user_id=current_user.id)
-                    new_mood.create()
-                    return jsonify({'message': 'Mood added successfully', 'mood': new_mood.read()})
+                    return {'message': 'No existing mood entry found. Use POST to create one.'}, 404
+            except Exception as e:
+                return {'message': 'Failed to update mood', 'error': str(e)}, 500
+
+        @token_required()
+        def delete(self):
+            current_user = g.current_user
+            
+            try:
+                # Check if the user already has an existing mood entry
+                existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
+                
+                if existing_mood:
+                    db.session.delete(existing_mood)
+                    db.session.commit()
+                    return jsonify({'message': 'Mood deleted successfully'})
+                else:
+                    return {'message': 'No mood entry found to delete'}, 404
+                
             except Exception as e:
                 return {'message': 'Failed to process mood', 'error': str(e)}, 500
 
@@ -72,18 +115,16 @@ class MoodAPI:
             current_user = g.current_user
             try:
                 existing_mood = Mood.query.filter_by(user_id=current_user.id).first()
-                print(existing_mood.mood)
-
-                existing_mood.mood = "neutral"
-                existing_mood.create()
-
-                print(existing_mood.read())
-
-                return jsonify({'message': 'Mood erased successfully'})
+                
+                if existing_mood:
+                    existing_mood.mood = "neutral"
+                    existing_mood.create()
+                    return jsonify({'message': 'Mood erased successfully'})
+                else:
+                    return {'message': 'No mood entry found to erase'}, 404
             except Exception as e:
-                # print(e)
                 return {'message': 'Failed to erase mood', 'error': str(e)}, 500
 
 # Register the API resources with the Blueprint
-api.add_resource(MoodAPI._Mood, '/mood')
-api.add_resource(MoodAPI._RestoreMood, '/mood/restore')
+api.add_resource(MoodAPI._Mood, '/mood', methods=['GET', 'POST', 'PUT', 'DELETE'])
+api.add_resource(MoodAPI._RestoreMood, '/mood/restore', methods=['POST'])
